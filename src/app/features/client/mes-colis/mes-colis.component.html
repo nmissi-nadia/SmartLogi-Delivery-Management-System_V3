@@ -1,0 +1,110 @@
+<div class="page-container">
+    <div class="page-header">
+        <div class="header-content">
+            <div>
+                <h1>📦 Mes Colis</h1>
+                <p>Suivez l'état de vos demandes de livraison</p>
+            </div>
+            <button class="btn-primary" routerLink="/client/nouvelle-livraison">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Nouvelle livraison
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters-bar">
+        <button class="filter-btn" [class.active]="filtreStatut() === 'TOUS'" (click)="changerFiltre('TOUS')">
+            Tous ({{ colis().length }})
+        </button>
+        <button class="filter-btn" [class.active]="filtreStatut() === 'EN_PREPARATION'"
+            (click)="changerFiltre('EN_PREPARATION')">
+            En préparation
+        </button>
+        <button class="filter-btn" [class.active]="filtreStatut() === 'EN_TRANSIT'"
+            (click)="changerFiltre('EN_TRANSIT')">
+            En transit
+        </button>
+        <button class="filter-btn" [class.active]="filtreStatut() === 'EN_LIVRAISON'"
+            (click)="changerFiltre('EN_LIVRAISON')">
+            En livraison
+        </button>
+        <button class="filter-btn" [class.active]="filtreStatut() === 'LIVRE'" (click)="changerFiltre('LIVRE')">
+            Livrés
+        </button>
+    </div>
+
+    <!-- Liste des colis -->
+    <div class="colis-grid">
+        @for (col of colisFiltres; track col.id) {
+        <div class="colis-card">
+            <div class="card-header">
+                <div class="numero">{{ col.numero }}</div>
+                <span class="statut-badge" [ngClass]="getStatutClass(col.statut)">
+                    {{ getStatutLabel(col.statut) }}
+                </span>
+            </div>
+
+            <div class="card-body">
+                <div class="info-row">
+                    <span class="label">📝 Description:</span>
+                    <span class="value">{{ col.description }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">👤 Destinataire:</span>
+                    <span class="value">{{ col.destinataire }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">📍 Adresse:</span>
+                    <span class="value">{{ col.adresse }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">📅 Date création:</span>
+                    <span class="value">{{ col.dateCreation | date:'dd/MM/yyyy' }}</span>
+                </div>
+
+                @if (col.dateEstimee) {
+                <div class="info-row">
+                    <span class="label">🚚 Livraison estimée:</span>
+                    <span class="value">{{ col.dateEstimee | date:'dd/MM/yyyy' }}</span>
+                </div>
+                }
+
+                <div class="info-row">
+                    <span class="label">⚡ Priorité:</span>
+                    <span class="priorite-badge" [ngClass]="getPrioriteClass(col.priorite)">
+                        {{ col.priorite }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button class="btn-details">
+                    Voir détails
+                </button>
+            </div>
+        </div>
+        } @empty {
+        <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                </path>
+            </svg>
+            <h3>Aucun colis trouvé</h3>
+            <p>Créez votre première demande de livraison</p>
+            <button class="btn-primary" routerLink="/client/nouvelle-livraison">
+                Nouvelle livraison
+            </button>
+        </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,171 @@
+<div class="page-container">
+    <div class="page-header">
+        <h1>📦 Nouvelle Demande de Livraison</h1>
+        <p>Remplissez le formulaire pour créer une demande de livraison</p>
+    </div>
+
+    <!-- Messages -->
+    @if (successMessage()) {
+    <div class="alert alert-success">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>{{ successMessage() }}</span>
+    </div>
+    }
+
+    @if (errorMessage()) {
+    <div class="alert alert-error">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>{{ errorMessage() }}</span>
+    </div>
+    }
+
+    <form [formGroup]="livraisonForm" (ngSubmit)="onSubmit()" class="livraison-form">
+        <!-- Section Destinataire -->
+        <div class="form-section">
+            <h2>👤 Informations du Destinataire</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nomDestinataire">Nom *</label>
+                    <input type="text" id="nomDestinataire" formControlName="nomDestinataire"
+                        placeholder="Nom du destinataire"
+                        [class.error]="hasError('nomDestinataire', 'required') || hasError('nomDestinataire', 'minlength')">
+                    @if (hasError('nomDestinataire', 'required') || hasError('nomDestinataire', 'minlength')) {
+                    <span class="error-message">{{ getErrorMessage('nomDestinataire') }}</span>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label for="prenomDestinataire">Prénom *</label>
+                    <input type="text" id="prenomDestinataire" formControlName="prenomDestinataire"
+                        placeholder="Prénom du destinataire"
+                        [class.error]="hasError('prenomDestinataire', 'required') || hasError('prenomDestinataire', 'minlength')">
+                    @if (hasError('prenomDestinataire', 'required') || hasError('prenomDestinataire', 'minlength')) {
+                    <span class="error-message">{{ getErrorMessage('prenomDestinataire') }}</span>
+                    }
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="telephoneDestinataire">Téléphone *</label>
+                    <input type="tel" id="telephoneDestinataire" formControlName="telephoneDestinataire"
+                        placeholder="0612345678"
+                        [class.error]="hasError('telephoneDestinataire', 'required') || hasError('telephoneDestinataire', 'pattern')">
+                    @if (hasError('telephoneDestinataire', 'required') || hasError('telephoneDestinataire', 'pattern'))
+                    {
+                    <span class="error-message">{{ getErrorMessage('telephoneDestinataire') }}</span>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label for="zone">Zone de livraison *</label>
+                    <select id="zone" formControlName="zone" [class.error]="hasError('zone', 'required')">
+                        <option value="">Sélectionnez une zone</option>
+                        <option value="NORD">Nord</option>
+                        <option value="SUD">Sud</option>
+                        <option value="EST">Est</option>
+                        <option value="OUEST">Ouest</option>
+                        <option value="CENTRE">Centre</option>
+                    </select>
+                    @if (hasError('zone', 'required')) {
+                    <span class="error-message">{{ getErrorMessage('zone') }}</span>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="adresseDestinataire">Adresse complète *</label>
+                <textarea id="adresseDestinataire" formControlName="adresseDestinataire" rows="3"
+                    placeholder="Adresse complète de livraison"
+                    [class.error]="hasError('adresseDestinataire', 'required') || hasError('adresseDestinataire', 'minlength')"></textarea>
+                @if (hasError('adresseDestinataire', 'required') || hasError('adresseDestinataire', 'minlength')) {
+                <span class="error-message">{{ getErrorMessage('adresseDestinataire') }}</span>
+                }
+            </div>
+        </div>
+
+        <!-- Section Colis -->
+        <div class="form-section">
+            <h2>📦 Informations du Colis</h2>
+
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <input type="text" id="description" formControlName="description" placeholder="Description du contenu"
+                    [class.error]="hasError('description', 'required') || hasError('description', 'minlength')">
+                @if (hasError('description', 'required') || hasError('description', 'minlength')) {
+                <span class="error-message">{{ getErrorMessage('description') }}</span>
+                }
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="poids">Poids (kg) *</label>
+                    <input type="number" id="poids" formControlName="poids" placeholder="0.5" step="0.1"
+                        [class.error]="hasError('poids', 'required') || hasError('poids', 'min')">
+                    @if (hasError('poids', 'required') || hasError('poids', 'min')) {
+                    <span class="error-message">{{ getErrorMessage('poids') }}</span>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label for="dimensions">Dimensions (L x l x H cm) *</label>
+                    <input type="text" id="dimensions" formControlName="dimensions" placeholder="30 x 20 x 10"
+                        [class.error]="hasError('dimensions', 'required')">
+                    @if (hasError('dimensions', 'required')) {
+                    <span class="error-message">{{ getErrorMessage('dimensions') }}</span>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label for="valeur">Valeur déclarée (€)</label>
+                    <input type="number" id="valeur" formControlName="valeur" placeholder="0" step="0.01">
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Options -->
+        <div class="form-section">
+            <h2>⚙️ Options de Livraison</h2>
+
+            <div class="form-group">
+                <label for="priorite">Priorité *</label>
+                <select id="priorite" formControlName="priorite">
+                    <option value="NORMALE">Normale</option>
+                    <option value="URGENTE">Urgente</option>
+                    <option value="EXPRESS">Express</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="instructions">Instructions spéciales</label>
+                <textarea id="instructions" formControlName="instructions" rows="3"
+                    placeholder="Instructions particulières pour la livraison (optionnel)"></textarea>
+            </div>
+        </div>
+
+        <!-- Boutons -->
+        <div class="form-actions">
+            <button type="button" class="btn-secondary" routerLink="/client/mes-colis">
+                Annuler
+            </button>
+            <button type="submit" class="btn-primary" [disabled]="loading()">
+                @if (loading()) {
+                <span class="spinner"></span>
+                <span>Création en cours...</span>
+                } @else {
+                <span>Créer la demande</span>
+                }
+            </button>
+        </div>
+    </form>
+</div>

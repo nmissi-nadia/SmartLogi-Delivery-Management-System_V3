@@ -1,0 +1,189 @@
+.page-container {
+    min-height: 100vh;
+    background: var(--off-white);
+    padding: 2rem;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 0.5rem 0;
+}
+
+.page-header p {
+    color: var(--text-gray);
+    margin: 0;
+}
+
+/* Statistiques */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--primary-yellow);
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Tableau */
+.historique-table-container {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.historique-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.historique-table thead {
+    background: var(--dark-bg);
+    color: var(--white);
+}
+
+.historique-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.historique-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s ease;
+}
+
+.historique-table tbody tr:hover {
+    background: var(--off-white);
+}
+
+.historique-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.historique-table td {
+    padding: 1rem;
+    color: var(--text-dark);
+}
+
+.numero-cell {
+    font-weight: 600;
+    color: var(--primary-yellow-dark);
+}
+
+.statut-badge {
+    padding: 0.375rem 0.875rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.statut-livre {
+    background: #d4edda;
+    color: #155724;
+}
+
+.statut-retourne {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.statut-annule {
+    background: #e0e0e0;
+    color: #424242;
+}
+
+.empty-row {
+    text-align: center;
+    padding: 3rem !important;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.empty-state svg {
+    color: var(--text-gray);
+}
+
+.empty-state p {
+    color: var(--text-gray);
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .historique-table-container {
+        overflow-x: auto;
+    }
+
+    .historique-table {
+        min-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .historique-table th,
+    .historique-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+}
