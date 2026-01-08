@@ -52,22 +52,34 @@ export class AuthService {
      * @param credentials - Les identifiants de connexion (username, password)
      * @returns Observable de la réponse JWT
      */
-    login(credentials: LoginCredentials): Observable<JwtResponse> {
-        return this.http.post<JwtResponse>(`${this.AUTH_ENDPOINT}/login`, credentials)
-            .pipe(
-                tap(response => {
-                    // Stocker le token
-                    this.tokenService.setToken(response.token);
+    login(credentials: LoginCredentials): Observable<any> {
+      return this.http.post<any>(`${this.AUTH_ENDPOINT}/login`, credentials)
+        .pipe(
+          tap(response => {
+            // Stocker le token
+            this.tokenService.setToken(response.token);
 
-                    // Mettre à jour l'état de l'utilisateur
-                    this.currentUserSubject.next(response.user);
-                    this.isAuthenticatedSubject.next(true);
-                }),
-                catchError(error => {
-                    console.error('Erreur de connexion:', error);
-                    return throwError(() => error);
-                })
-            );
+            // Extraire les infos du token
+            const roles = this.tokenService.getRolesFromToken();
+            const username = this.tokenService.getUsernameFromToken();
+
+            // Créer un user minimal depuis le token
+            const user: User = {
+              id: 0,
+              username: username || '',
+              email: '',
+              roles: roles as Role[]
+            };
+
+            // Mettre à jour l'état
+            this.currentUserSubject.next(user);
+            this.isAuthenticatedSubject.next(true);
+          }),
+          catchError(error => {
+            console.error('Erreur de connexion:', error);
+            return throwError(() => error);
+          })
+        );
     }
 
     /**
