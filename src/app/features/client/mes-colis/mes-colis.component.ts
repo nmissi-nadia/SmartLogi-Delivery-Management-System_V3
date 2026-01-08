@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 
 interface Colis {
     id: number;
@@ -20,7 +21,7 @@ interface Colis {
 @Component({
     selector: 'app-mes-colis',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, NavbarComponent],
     templateUrl: './mes-colis.component.html',
     styleUrl: './mes-colis.component.css'
 })
