@@ -1,15 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ColisService, type Colis } from '../../../core/services/colis.service';
+import { DestinataireService } from '../../../core/services/destinataire.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
-interface ColisHistorique {
-    id: number;
-    numero: string;
-    description: string;
-    destinataire: string;
-    statut: string;
-    dateCreation: Date;
-    dateLivraison?: Date;
-    livreur?: string;
+// Interface enrichie
+interface ColisEnrichi extends Colis {
+    destinataireNom?: string;
 }
 
 /**
@@ -22,48 +20,71 @@ interface ColisHistorique {
     templateUrl: './historique.component.html',
     styleUrl: './historique.component.css'
 })
-export class HistoriqueComponent {
-    historique = signal<ColisHistorique[]>([
-        {
-            id: 1,
-            numero: 'COL-2026-003',
-            description: 'Vêtements',
-            destinataire: 'Bernard Claire',
-            statut: 'LIVRE',
-            dateCreation: new Date('2026-01-05'),
-            dateLivraison: new Date('2026-01-07'),
-            livreur: 'Mohamed Ali'
-        },
-        {
-            id: 2,
-            numero: 'COL-2025-125',
-            description: 'Livres',
-            destinataire: 'Dubois Marc',
-            statut: 'LIVRE',
-            dateCreation: new Date('2025-12-28'),
-            dateLivraison: new Date('2025-12-30'),
-            livreur: 'Fatima Zahra'
-        },
-        {
-            id: 3,
-            numero: 'COL-2025-098',
-            description: 'Matériel de bureau',
-            destinataire: 'Petit Anne',
-            statut: 'LIVRE',
-            dateCreation: new Date('2025-12-15'),
-            dateLivraison: new Date('2025-12-18'),
-            livreur: 'Hassan Youssef'
-        },
-        {
-            id: 4,
-            numero: 'COL-2025-076',
-            description: 'Cadeaux',
-            destinataire: 'Moreau Pierre',
-            statut: 'RETOURNE',
-            dateCreation: new Date('2025-12-10'),
-            dateLivraison: new Date('2025-12-14')
-        }
-    ]);
+export class HistoriqueComponent implements OnInit {
+    private readonly colisService = inject(ColisService);
+    private readonly destinataireService = inject(DestinataireService);
+
+    historique = signal<ColisEnrichi[]>([]);
+    loading = signal(true);
+    errorMessage = signal<string | null>(null);
+
+    ngOnInit(): void {
+        this.chargerHistorique();
+    }
+
+    /**
+     * Charge l'historique depuis l'API (colis livrés uniquement)
+     */
+    private chargerHistorique(): void {
+        this.loading.set(true);
+        this.errorMessage.set(null);
+
+        // TODO: Récupérer l'ID du client depuis le token JWT
+        const clientId = '1';
+
+        this.colisService.getColisByClient(clientId).subscribe({
+            next: (colis) => {
+                // Filtrer uniquement les colis livrés pour l'historique
+                const historique = colis.filter(c => c.statut === 'LIVRE');
+
+                // Enrichir avec les noms des destinataires
+                const enrichissements = historique.map(col =>
+                    this.destinataireService.getDestinataireById(col.destinataireId).pipe(
+                        map(dest => ({
+                            ...col,
+                            destinataireNom: `${dest.prenom} ${dest.nom}`
+                        } as ColisEnrichi)),
+                        catchError(() => of({
+                            ...col,
+                            destinataireNom: `ID: ${col.destinataireId}`
+                        } as ColisEnrichi))
+                    )
+                );
+
+                if (enrichissements.length === 0) {
+                    this.historique.set([]);
+                    this.loading.set(false);
+                    return;
+                }
+
+                forkJoin(enrichissements).subscribe({
+                    next: (colisEnrichis) => {
+                        this.historique.set(colisEnrichis);
+                        this.loading.set(false);
+                    },
+                    error: () => {
+                        this.historique.set(historique as ColisEnrichi[]);
+                        this.loading.set(false);
+                    }
+                });
+            },
+            error: (error) => {
+                console.error('Erreur chargement historique:', error);
+                this.errorMessage.set('Erreur lors du chargement de l\'historique');
+                this.loading.set(false);
+            }
+        });
+    }
 
     getStatutLabel(statut: string): string {
         const labels: Record<string, string> = {
@@ -83,22 +104,23 @@ export class HistoriqueComponent {
         return classes[statut] || '';
     }
 
-    calculerDuree(dateCreation: Date, dateLivraison?: Date): string {
-        if (!dateLivraison) return '-';
+    calculerDuree(dateCreation?: Date | string, dateFin?: Date | string): string {
+        if (!dateFin || !dateCreation) return '-';
 
-        const diff = dateLivraison.getTime() - dateCreation.getTime();
+        const diff = new Date(dateFin).getTime() - new Date(dateCreation).getTime();
         const jours = Math.floor(diff / (1000 * 60 * 60 * 24));
 
         return `${jours} jour${jours > 1 ? 's' : ''}`;
     }
 
-    // Méthodes pour les statistiques (éviter les arrow functions dans le template)
+    // Méthodes pour les statistiques
     getCountLivres(): number {
         return this.historique().filter(h => h.statut === 'LIVRE').length;
     }
 
     getCountRetournes(): number {
-        return this.historique().filter(h => h.statut === 'RETOURNE').length;
+        // Compter les colis en transit ou en stock (non encore livrés)
+        return this.historique().filter(h => h.statut !== 'LIVRE').length;
     }
 
     getTotalCount(): number {

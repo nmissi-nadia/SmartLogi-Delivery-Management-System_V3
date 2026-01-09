@@ -1,3 +1,5 @@
+<app-navbar></app-navbar>
+
 <div class="page-container">
     <div class="page-header">
         <h1>📦 Nouvelle Demande de Livraison</h1>
@@ -29,78 +31,14 @@
     }
 
     <form [formGroup]="livraisonForm" (ngSubmit)="onSubmit()" class="livraison-form">
-        <!-- Section Destinataire -->
-        <div class="form-section">
-            <h2>👤 Informations du Destinataire</h2>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="nomDestinataire">Nom *</label>
-                    <input type="text" id="nomDestinataire" formControlName="nomDestinataire"
-                        placeholder="Nom du destinataire"
-                        [class.error]="hasError('nomDestinataire', 'required') || hasError('nomDestinataire', 'minlength')">
-                    @if (hasError('nomDestinataire', 'required') || hasError('nomDestinataire', 'minlength')) {
-                    <span class="error-message">{{ getErrorMessage('nomDestinataire') }}</span>
-                    }
-                </div>
-
-                <div class="form-group">
-                    <label for="prenomDestinataire">Prénom *</label>
-                    <input type="text" id="prenomDestinataire" formControlName="prenomDestinataire"
-                        placeholder="Prénom du destinataire"
-                        [class.error]="hasError('prenomDestinataire', 'required') || hasError('prenomDestinataire', 'minlength')">
-                    @if (hasError('prenomDestinataire', 'required') || hasError('prenomDestinataire', 'minlength')) {
-                    <span class="error-message">{{ getErrorMessage('prenomDestinataire') }}</span>
-                    }
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="telephoneDestinataire">Téléphone *</label>
-                    <input type="tel" id="telephoneDestinataire" formControlName="telephoneDestinataire"
-                        placeholder="0612345678"
-                        [class.error]="hasError('telephoneDestinataire', 'required') || hasError('telephoneDestinataire', 'pattern')">
-                    @if (hasError('telephoneDestinataire', 'required') || hasError('telephoneDestinataire', 'pattern'))
-                    {
-                    <span class="error-message">{{ getErrorMessage('telephoneDestinataire') }}</span>
-                    }
-                </div>
-
-                <div class="form-group">
-                    <label for="zone">Zone de livraison *</label>
-                    <select id="zone" formControlName="zone" [class.error]="hasError('zone', 'required')">
-                        <option value="">Sélectionnez une zone</option>
-                        <option value="NORD">Nord</option>
-                        <option value="SUD">Sud</option>
-                        <option value="EST">Est</option>
-                        <option value="OUEST">Ouest</option>
-                        <option value="CENTRE">Centre</option>
-                    </select>
-                    @if (hasError('zone', 'required')) {
-                    <span class="error-message">{{ getErrorMessage('zone') }}</span>
-                    }
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="adresseDestinataire">Adresse complète *</label>
-                <textarea id="adresseDestinataire" formControlName="adresseDestinataire" rows="3"
-                    placeholder="Adresse complète de livraison"
-                    [class.error]="hasError('adresseDestinataire', 'required') || hasError('adresseDestinataire', 'minlength')"></textarea>
-                @if (hasError('adresseDestinataire', 'required') || hasError('adresseDestinataire', 'minlength')) {
-                <span class="error-message">{{ getErrorMessage('adresseDestinataire') }}</span>
-                }
-            </div>
-        </div>
-
         <!-- Section Colis -->
         <div class="form-section">
             <h2>📦 Informations du Colis</h2>
 
             <div class="form-group">
                 <label for="description">Description *</label>
-                <input type="text" id="description" formControlName="description" placeholder="Description du contenu"
+                <input type="text" id="description" formControlName="description"
+                    placeholder="Description du contenu du colis"
                     [class.error]="hasError('description', 'required') || hasError('description', 'minlength')">
                 @if (hasError('description', 'required') || hasError('description', 'minlength')) {
                 <span class="error-message">{{ getErrorMessage('description') }}</span>
@@ -109,7 +47,7 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="poids">Poids (kg) *</label>
+                    <label for="poids">Poids total (kg) *</label>
                     <input type="number" id="poids" formControlName="poids" placeholder="0.5" step="0.1"
                         [class.error]="hasError('poids', 'required') || hasError('poids', 'min')">
                     @if (hasError('poids', 'required') || hasError('poids', 'min')) {
@@ -118,38 +56,293 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="dimensions">Dimensions (L x l x H cm) *</label>
-                    <input type="text" id="dimensions" formControlName="dimensions" placeholder="30 x 20 x 10"
-                        [class.error]="hasError('dimensions', 'required')">
-                    @if (hasError('dimensions', 'required')) {
-                    <span class="error-message">{{ getErrorMessage('dimensions') }}</span>
-                    }
+                    <label for="priorite">Priorité *</label>
+                    <select id="priorite" formControlName="priorite">
+                        <option value="HAUTE">Haute</option>
+                        <option value="MOYENNE">Moyenne</option>
+                        <option value="BASSE">Basse</option>
+                    </select>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="valeur">Valeur déclarée (€)</label>
-                    <input type="number" id="valeur" formControlName="valeur" placeholder="0" step="0.01">
-                </div>
+            <div class="form-group">
+                <label for="villeDestination">Ville de destination *</label>
+                <input type="text" id="villeDestination" formControlName="villeDestination"
+                    placeholder="Ex: Casablanca, Rabat..."
+                    [class.error]="hasError('villeDestination', 'required') || hasError('villeDestination', 'minlength')">
+                @if (hasError('villeDestination', 'required') || hasError('villeDestination', 'minlength')) {
+                <span class="error-message">{{ getErrorMessage('villeDestination') }}</span>
+                }
             </div>
         </div>
 
-        <!-- Section Options -->
+        <!-- Section Zone -->
         <div class="form-section">
-            <h2>⚙️ Options de Livraison</h2>
+            <h2>📍 Zone de Livraison</h2>
 
             <div class="form-group">
-                <label for="priorite">Priorité *</label>
-                <select id="priorite" formControlName="priorite">
-                    <option value="NORMALE">Normale</option>
-                    <option value="URGENTE">Urgente</option>
-                    <option value="EXPRESS">Express</option>
-                </select>
+                <label>Type de zone</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" formControlName="zoneType" value="existant" (change)="onZoneTypeChange()">
+                        <span>Zone existante</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" formControlName="zoneType" value="nouveau" (change)="onZoneTypeChange()">
+                        <span>Nouvelle zone</span>
+                    </label>
+                </div>
             </div>
 
+            @if (getZoneType() === 'existant') {
             <div class="form-group">
-                <label for="instructions">Instructions spéciales</label>
-                <textarea id="instructions" formControlName="instructions" rows="3"
-                    placeholder="Instructions particulières pour la livraison (optionnel)"></textarea>
+                <label for="zoneId">Sélectionner une zone (optionnel)</label>
+                <select id="zoneId" formControlName="zoneId">
+                    <option value="">Aucune zone</option>
+                    @for (zone of zonesDisponibles(); track zone.id) {
+                    <option [value]="zone.id">{{ zone.nom }} - {{ zone.codePostal }}</option>
+                    }
+                </select>
+            </div>
+            }
+
+            @if (getZoneType() === 'nouveau') {
+            <div class="nouvelle-zone-fields">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="zoneNom">Nom de la zone *</label>
+                        <input type="text" id="zoneNom" formControlName="zoneNom"
+                            placeholder="Ex: Zone Nord, Zone Centre..."
+                            [class.error]="hasError('zoneNom', 'required') || hasError('zoneNom', 'minlength')">
+                        @if (hasError('zoneNom', 'required') || hasError('zoneNom', 'minlength')) {
+                        <span class="error-message">{{ getErrorMessage('zoneNom') }}</span>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <label for="zoneCodePostal">Code postal *</label>
+                        <input type="text" id="zoneCodePostal" formControlName="zoneCodePostal" placeholder="Ex: 75001"
+                            [class.error]="hasError('zoneCodePostal', 'required') || hasError('zoneCodePostal', 'pattern')">
+                        @if (hasError('zoneCodePostal', 'required') || hasError('zoneCodePostal', 'pattern')) {
+                        <span class="error-message">Format: 5 chiffres</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Section Destinataire -->
+        <div class="form-section">
+            <h2>👤 Destinataire</h2>
+
+            <div class="form-group">
+                <label>Type de destinataire *</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" formControlName="destinataireType" value="existant"
+                            (change)="onDestinataireTypeChange()">
+                        <span>Destinataire existant</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" formControlName="destinataireType" value="nouveau"
+                            (change)="onDestinataireTypeChange()">
+                        <span>Nouveau destinataire</span>
+                    </label>
+                </div>
+            </div>
+
+            @if (getDestinataireType() === 'existant') {
+            <div class="form-group">
+                <label for="destinataireId">Sélectionner un destinataire *</label>
+                <select id="destinataireId" formControlName="destinataireId"
+                    [class.error]="hasError('destinataireId', 'required')">
+                    <option value="">Choisissez un destinataire</option>
+                    @for (dest of destinatairesDisponibles(); track dest.id) {
+                    <option [value]="dest.id">{{ dest.prenom }} {{ dest.nom }} - {{ dest.telephone }}</option>
+                    }
+                </select>
+                @if (hasError('destinataireId', 'required')) {
+                <span class="error-message">Destinataire requis</span>
+                }
+            </div>
+            }
+
+            @if (getDestinataireType() === 'nouveau') {
+            <div class="nouveau-destinataire-fields">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="destinataireNom">Nom *</label>
+                        <input type="text" id="destinataireNom" formControlName="destinataireNom"
+                            placeholder="Nom du destinataire"
+                            [class.error]="hasError('destinataireNom', 'required') || hasError('destinataireNom', 'minlength')">
+                        @if (hasError('destinataireNom', 'required') || hasError('destinataireNom', 'minlength')) {
+                        <span class="error-message">{{ getErrorMessage('destinataireNom') }}</span>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <label for="destinatairePrenom">Prénom *</label>
+                        <input type="text" id="destinatairePrenom" formControlName="destinatairePrenom"
+                            placeholder="Prénom du destinataire"
+                            [class.error]="hasError('destinatairePrenom', 'required') || hasError('destinatairePrenom', 'minlength')">
+                        @if (hasError('destinatairePrenom', 'required') || hasError('destinatairePrenom', 'minlength'))
+                        {
+                        <span class="error-message">{{ getErrorMessage('destinatairePrenom') }}</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="destinataireEmail">Email *</label>
+                        <input type="email" id="destinataireEmail" formControlName="destinataireEmail"
+                            placeholder="email@exemple.com"
+                            [class.error]="hasError('destinataireEmail', 'required') || hasError('destinataireEmail', 'email')">
+                        @if (hasError('destinataireEmail', 'required') || hasError('destinataireEmail', 'email')) {
+                        <span class="error-message">{{ getErrorMessage('destinataireEmail') }}</span>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <label for="destinataireTelephone">Téléphone *</label>
+                        <input type="tel" id="destinataireTelephone" formControlName="destinataireTelephone"
+                            placeholder="0612345678"
+                            [class.error]="hasError('destinataireTelephone', 'required') || hasError('destinataireTelephone', 'pattern')">
+                        @if (hasError('destinataireTelephone', 'required') || hasError('destinataireTelephone',
+                        'pattern')) {
+                        <span class="error-message">Format: 10 chiffres</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="destinataireAdresse">Adresse complète *</label>
+                    <textarea id="destinataireAdresse" formControlName="destinataireAdresse" rows="3"
+                        placeholder="Adresse complète du destinataire"
+                        [class.error]="hasError('destinataireAdresse', 'required') || hasError('destinataireAdresse', 'minlength')"></textarea>
+                    @if (hasError('destinataireAdresse', 'required') || hasError('destinataireAdresse', 'minlength')) {
+                    <span class="error-message">{{ getErrorMessage('destinataireAdresse') }}</span>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Section Produits -->
+        <div class="form-section">
+            <div class="section-header">
+                <h2>📋 Produits</h2>
+                <button type="button" class="btn-add-produit" (click)="ajouterProduit()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Ajouter un produit
+                </button>
+            </div>
+
+            <div formArrayName="produits" class="produits-list">
+                @for (produit of produits.controls; track $index) {
+                <div [formGroupName]="$index" class="produit-item">
+                    <div class="produit-number">{{ $index + 1 }}</div>
+
+                    <div class="produit-content">
+                        <div class="form-group">
+                            <label>Type de produit *</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" formControlName="type" value="existant"
+                                        (change)="onProduitTypeChange($index)">
+                                    <span>Produit existant</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" formControlName="type" value="nouveau"
+                                        (change)="onProduitTypeChange($index)">
+                                    <span>Nouveau produit</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        @if (getProduitType($index) === 'existant') {
+                        <div class="produit-fields">
+                            <div class="form-group">
+                                <label [for]="'produitId-' + $index">Sélectionner un produit *</label>
+                                <select [id]="'produitId-' + $index" formControlName="produitId"
+                                    [class.error]="hasProduitError($index, 'produitId', 'required')">
+                                    <option value="">Choisissez un produit</option>
+                                    @for (p of produitsDisponibles(); track p.id) {
+                                    <option [value]="p.id">{{ p.nom }} ({{ p.categorie }}) - {{ p.poids }}kg - {{ p.prix
+                                        }}€</option>
+                                    }
+                                </select>
+                                @if (hasProduitError($index, 'produitId', 'required')) {
+                                <span class="error-message">Produit requis</span>
+                                }
+                            </div>
+
+                            <div class="form-group">
+                                <label [for]="'quantite-' + $index">Quantité *</label>
+                                <input type="number" [id]="'quantite-' + $index" formControlName="quantite" min="1"
+                                    placeholder="1"
+                                    [class.error]="hasProduitError($index, 'quantite', 'required') || hasProduitError($index, 'quantite', 'min')">
+                            </div>
+                        </div>
+                        }
+
+                        @if (getProduitType($index) === 'nouveau') {
+                        <div class="nouveau-produit-fields">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label [for]="'nom-' + $index">Nom du produit *</label>
+                                    <input type="text" [id]="'nom-' + $index" formControlName="nom"
+                                        placeholder="Ex: Ordinateur portable">
+                                </div>
+
+                                <div class="form-group">
+                                    <label [for]="'categorie-' + $index">Catégorie *</label>
+                                    <input type="text" [id]="'categorie-' + $index" formControlName="categorie"
+                                        placeholder="Ex: Électronique">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label [for]="'poids-produit-' + $index">Poids unitaire (kg) *</label>
+                                    <input type="number" [id]="'poids-produit-' + $index" formControlName="poids"
+                                        step="0.01" placeholder="0.5">
+                                </div>
+
+                                <div class="form-group">
+                                    <label [for]="'prix-' + $index">Prix unitaire (€) *</label>
+                                    <input type="number" [id]="'prix-' + $index" formControlName="prix" step="0.01"
+                                        placeholder="10.00">
+                                </div>
+
+                                <div class="form-group">
+                                    <label [for]="'quantite-nouveau-' + $index">Quantité *</label>
+                                    <input type="number" [id]="'quantite-nouveau-' + $index" formControlName="quantite"
+                                        min="1" placeholder="1">
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+
+                    @if (produits.length > 1) {
+                    <button type="button" class="btn-remove-produit" (click)="supprimerProduit($index)"
+                        title="Supprimer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                        </svg>
+                    </button>
+                    }
+                </div>
+                }
             </div>
         </div>
 

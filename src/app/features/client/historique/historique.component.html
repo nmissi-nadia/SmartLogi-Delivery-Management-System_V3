@@ -60,8 +60,6 @@
                     <th>Description</th>
                     <th>Destinataire</th>
                     <th>Date création</th>
-                    <th>Date livraison</th>
-                    <th>Durée</th>
                     <th>Livreur</th>
                     <th>Statut</th>
                 </tr>
@@ -69,13 +67,11 @@
             <tbody>
                 @for (item of historique(); track item.id) {
                 <tr>
-                    <td class="numero-cell">{{ item.numero }}</td>
+                    <td class="numero-cell">{{ item.id.substring(0, 8) }}</td>
                     <td>{{ item.description }}</td>
-                    <td>{{ item.destinataire }}</td>
+                    <td>{{ item.destinataireNom || ('ID: ' + item.destinataireId) }}</td>
                     <td>{{ item.dateCreation | date:'dd/MM/yyyy' }}</td>
-                    <td>{{ item.dateLivraison ? (item.dateLivraison | date:'dd/MM/yyyy') : '-' }}</td>
-                    <td>{{ calculerDuree(item.dateCreation, item.dateLivraison) }}</td>
-                    <td>{{ item.livreur || '-' }}</td>
+                    <td>{{ item.livreurId ? ('ID: ' + item.livreurId) : '-' }}</td>
                     <td>
                         <span class="statut-badge" [ngClass]="getStatutClass(item.statut)">
                             {{ getStatutLabel(item.statut) }}
@@ -84,7 +80,7 @@
                 </tr>
                 } @empty {
                 <tr>
-                    <td colspan="8" class="empty-row">
+                    <td colspan="6" class="empty-row">
                         <div class="empty-state">
                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2">

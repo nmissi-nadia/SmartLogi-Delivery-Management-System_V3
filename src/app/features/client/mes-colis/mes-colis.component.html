@@ -20,12 +20,11 @@
 
     <!-- Filtres -->
     <div class="filters-bar">
-        <button class="filter-btn" [class.active]="filtreStatut() === 'TOUS'" (click)="changerFiltre('TOUS')">
+        <button class="filter-btn" [class.active]="filtreStatut() === 'tous'" (click)="changerFiltre('tous')">
             Tous ({{ colis().length }})
         </button>
-        <button class="filter-btn" [class.active]="filtreStatut() === 'EN_PREPARATION'"
-            (click)="changerFiltre('EN_PREPARATION')">
-            En préparation
+        <button class="filter-btn" [class.active]="filtreStatut() === 'CREE'" (click)="changerFiltre('CREE')">
+            Créé
         </button>
         <button class="filter-btn" [class.active]="filtreStatut() === 'EN_TRANSIT'"
             (click)="changerFiltre('EN_TRANSIT')">
@@ -45,7 +44,7 @@
         @for (col of colisFiltres; track col.id) {
         <div class="colis-card">
             <div class="card-header">
-                <div class="numero">{{ col.numero }}</div>
+                <div class="numero">{{ col.id.substring(0, 8) }}</div>
                 <span class="statut-badge" [ngClass]="getStatutClass(col.statut)">
                     {{ getStatutLabel(col.statut) }}
                 </span>
@@ -59,23 +58,18 @@
 
                 <div class="info-row">
                     <span class="label">👤 Destinataire:</span>
-                    <span class="value">{{ col.destinataire }}</span>
+                    <span class="value">{{ col.destinataireNom || ('ID: ' + col.destinataireId) }}</span>
                 </div>
 
                 <div class="info-row">
-                    <span class="label">📍 Adresse:</span>
-                    <span class="value">{{ col.adresse }}</span>
+                    <span class="label">📍 Ville:</span>
+                    <span class="value">{{ col.villeDestination }}</span>
                 </div>
 
+                @if (col.livreurId) {
                 <div class="info-row">
-                    <span class="label">📅 Date création:</span>
-                    <span class="value">{{ col.dateCreation | date:'dd/MM/yyyy' }}</span>
-                </div>
-
-                @if (col.dateEstimee) {
-                <div class="info-row">
-                    <span class="label">🚚 Livraison estimée:</span>
-                    <span class="value">{{ col.dateEstimee | date:'dd/MM/yyyy' }}</span>
+                    <span class="label">🚚 Livreur:</span>
+                    <span class="value">ID: {{ col.livreurId }}</span>
                 </div>
                 }
 

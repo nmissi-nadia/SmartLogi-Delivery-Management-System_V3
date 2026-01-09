@@ -1,18 +1,16 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
+import { ColisService, type Colis } from '../../../core/services/colis.service';
+import { DestinataireService } from '../../../core/services/destinataire.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
-interface Colis {
-    id: number;
-    numero: string;
-    description: string;
-    destinataire: string;
-    adresse: string;
-    statut: string;
-    priorite: string;
-    dateCreation: Date;
-    dateEstimee?: Date;
+// Interface enrichie avec les détails
+interface ColisEnrichi extends Colis {
+    destinataireNom?: string;
+    livreurNom?: string;
 }
 
 /**
@@ -25,85 +23,124 @@ interface Colis {
     templateUrl: './mes-colis.component.html',
     styleUrl: './mes-colis.component.css'
 })
-export class MesColisComponent {
-    colis = signal<Colis[]>([
-        {
-            id: 1,
-            numero: 'COL-2026-001',
-            description: 'Documents importants',
-            destinataire: 'Dupont Jean',
-            adresse: '15 Rue de la Paix, Paris',
-            statut: 'EN_TRANSIT',
-            priorite: 'URGENTE',
-            dateCreation: new Date('2026-01-07'),
-            dateEstimee: new Date('2026-01-09')
-        },
-        {
-            id: 2,
-            numero: 'COL-2026-002',
-            description: 'Colis fragile - Électronique',
-            destinataire: 'Martin Sophie',
-            adresse: '42 Avenue des Champs, Lyon',
-            statut: 'EN_PREPARATION',
-            priorite: 'NORMALE',
-            dateCreation: new Date('2026-01-08'),
-            dateEstimee: new Date('2026-01-12')
-        },
-        {
-            id: 3,
-            numero: 'COL-2026-003',
-            description: 'Vêtements',
-            destinataire: 'Bernard Claire',
-            adresse: '8 Boulevard Victor Hugo, Marseille',
-            statut: 'LIVRE',
-            priorite: 'NORMALE',
-            dateCreation: new Date('2026-01-05'),
-            dateEstimee: new Date('2026-01-07')
-        }
-    ]);
+export class MesColisComponent implements OnInit {
+    private readonly colisService = inject(ColisService);
+    private readonly destinataireService = inject(DestinataireService);
 
-    filtreStatut = signal<string>('TOUS');
+    colis = signal<ColisEnrichi[]>([]);
+    filtreStatut = signal<string>('tous');
+    loading = signal(true);
+    errorMessage = signal<string | null>(null);
 
-    get colisFiltres(): Colis[] {
-        const filtre = this.filtreStatut();
-        if (filtre === 'TOUS') {
-            return this.colis();
-        }
-        return this.colis().filter(c => c.statut === filtre);
+    ngOnInit(): void {
+        this.chargerColis();
+    }
+
+    /**
+     * Charge les colis depuis l'API et enrichit avec les détails
+     */
+    private chargerColis(): void {
+        this.loading.set(true);
+        this.errorMessage.set(null);
+
+        // TODO: Récupérer l'ID du client depuis le token JWT
+        const clientId = '1';
+
+        this.colisService.getColisByClient(clientId).subscribe({
+            next: (colis) => {
+                // Enrichir chaque colis avec les détails du destinataire
+                const enrichissements = colis.map(col =>
+                    this.destinataireService.getDestinataireById(col.destinataireId).pipe(
+                        map(dest => ({
+                            ...col,
+                            destinataireNom: `${dest.prenom} ${dest.nom}`
+                        } as ColisEnrichi)),
+                        catchError(() => of({
+                            ...col,
+                            destinataireNom: `ID: ${col.destinataireId}`
+                        } as ColisEnrichi))
+                    )
+                );
+
+                // Attendre que tous les enrichissements soient terminés
+                if (enrichissements.length === 0) {
+                    this.colis.set([]);
+                    this.loading.set(false);
+                    return;
+                }
+
+                forkJoin(enrichissements).subscribe({
+                    next: (colisEnrichis) => {
+                        this.colis.set(colisEnrichis);
+                        this.loading.set(false);
+                    },
+                    error: () => {
+                        this.colis.set(colis as ColisEnrichi[]);
+                        this.loading.set(false);
+                    }
+                });
+            },
+            error: (error) => {
+                console.error('Erreur chargement colis:', error);
+                this.errorMessage.set('Erreur lors du chargement des colis');
+                this.loading.set(false);
+            }
+        });
+    }
+
+    filtrerParStatut(statut: string): void {
+        this.filtreStatut.set(statut);
     }
 
     changerFiltre(statut: string): void {
         this.filtreStatut.set(statut);
     }
 
+    get colisFiltres(): ColisEnrichi[] {
+        const statut = this.filtreStatut();
+        if (statut === 'tous') {
+            return this.colis();
+        }
+        return this.colis().filter(c => c.statut === statut);
+    }
+
+    getStatutClass(statut: string): string {
+        const classes: { [key: string]: string } = {
+            'CREE': 'statut-preparation',
+            'EN_TRANSIT': 'statut-transit',
+            'LIVRE': 'statut-livre',
+            'RETOURNE': 'statut-retourne',
+            'ANNULE': 'statut-annule'
+        };
+        return classes[statut] || 'statut-default';
+    }
+
     getStatutLabel(statut: string): string {
-        const labels: Record<string, string> = {
-            'EN_PREPARATION': 'En préparation',
+        const labels: { [key: string]: string } = {
+            'CREE': 'En préparation',
             'EN_TRANSIT': 'En transit',
-            'EN_LIVRAISON': 'En livraison',
             'LIVRE': 'Livré',
-            'RETOURNE': 'Retourné'
+            'RETOURNE': 'Retourné',
+            'ANNULE': 'Annulé'
         };
         return labels[statut] || statut;
     }
 
-    getStatutClass(statut: string): string {
-        const classes: Record<string, string> = {
-            'EN_PREPARATION': 'statut-preparation',
-            'EN_TRANSIT': 'statut-transit',
-            'EN_LIVRAISON': 'statut-livraison',
-            'LIVRE': 'statut-livre',
-            'RETOURNE': 'statut-retourne'
+    getPrioriteClass(priorite: string): string {
+        const classes: { [key: string]: string } = {
+            'HAUTE': 'priorite-haute',
+            'MOYENNE': 'priorite-moyenne',
+            'BASSE': 'priorite-basse'
         };
-        return classes[statut] || '';
+        return classes[priorite] || 'priorite-default';
     }
 
-    getPrioriteClass(priorite: string): string {
-        const classes: Record<string, string> = {
-            'NORMALE': 'priorite-normale',
-            'URGENTE': 'priorite-urgente',
-            'EXPRESS': 'priorite-express'
+    getPrioriteLabel(priorite: string): string {
+        const labels: { [key: string]: string } = {
+            'HAUTE': 'Haute',
+            'MOYENNE': 'Moyenne',
+            'BASSE': 'Basse'
         };
-        return classes[priorite] || '';
+        return labels[priorite] || priorite;
     }
 }
