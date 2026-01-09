@@ -14,6 +14,10 @@ export const CLIENT_ROUTES: Routes = [
         loadComponent: () => import('./mes-colis/mes-colis.component').then(m => m.MesColisComponent)
     },
     {
+        path: 'colis/:id',
+        loadComponent: () => import('./colis-details/colis-details.component').then(m => m.ColisDetailsComponent)
+    },
+    {
         path: 'historique',
         loadComponent: () => import('./historique/historique.component').then(m => m.HistoriqueComponent)
     },
