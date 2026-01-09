@@ -1,0 +1,153 @@
+<app-navbar></app-navbar>
+
+<div class="dashboard-container">
+    <!-- En-tête -->
+    <div class="dashboard-header">
+        <h1> Dashboard Gestionnaire</h1>
+        <p class="subtitle">Vue d'ensemble de la logistique</p>
+    </div>
+
+    <!-- État de chargement -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des données...</p>
+    </div>
+    }
+
+    <!-- Message d'erreur -->
+    @if (errorMessage()) {
+    <div class="error-message">
+        <p>{{ errorMessage() }}</p>
+    </div>
+    }
+
+    <!-- Contenu -->
+    @if (!loading() && statistiques()) {
+    <div class="dashboard-content">
+        <!-- Cartes de statistiques (KPIs) -->
+        <div class="kpi-grid">
+            <!-- Total colis -->
+            <div class="kpi-card total">
+                <div class="kpi-icon">📦</div>
+                <div class="kpi-content">
+                    <h3>Total Colis</h3>
+                    <p class="kpi-value">{{ statistiques()!.totalColis }}</p>
+                </div>
+            </div>
+
+            <!-- Colis en attente -->
+            <div class="kpi-card attente">
+                <div class="kpi-icon">⏳</div>
+                <div class="kpi-content">
+                    <h3>En Attente</h3>
+                    <p class="kpi-value">{{ statistiques()!.colisEnAttente }}</p>
+                </div>
+            </div>
+
+            <!-- Colis en cours -->
+            <div class="kpi-card encours">
+                <div class="kpi-icon">🚚</div>
+                <div class="kpi-content">
+                    <h3>En Cours</h3>
+                    <p class="kpi-value">{{ statistiques()!.colisEnCours }}</p>
+                </div>
+            </div>
+
+            <!-- Colis livrés -->
+            <div class="kpi-card livres">
+                <div class="kpi-icon">✅</div>
+                <div class="kpi-content">
+                    <h3>Livrés</h3>
+                    <p class="kpi-value">{{ statistiques()!.colisLivres }}</p>
+                </div>
+            </div>
+
+            <!-- Taux de livraison -->
+            <div class="kpi-card taux">
+                <div class="kpi-icon">📈</div>
+                <div class="kpi-content">
+                    <h3>Taux de Livraison</h3>
+                    <p class="kpi-value">{{ getTauxLivraison() }}%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="quick-actions">
+            <h2>⚡ Actions Rapides</h2>
+            <div class="actions-grid">
+                <button class="action-btn" routerLink="/gestionnaire/colis-list">
+                    <span class="action-icon">📋</span>
+                    <span class="action-text">Tous les Colis</span>
+                </button>
+                <button class="action-btn" routerLink="/gestionnaire/clients-management">
+                    <span class="action-icon">👥</span>
+                    <span class="action-text">Gérer Clients</span>
+                </button>
+                <button class="action-btn" routerLink="/gestionnaire/livreurs-management">
+                    <span class="action-icon">🚛</span>
+                    <span class="action-text">Gérer Livreurs</span>
+                </button>
+                <button class="action-btn" routerLink="/gestionnaire/zones">
+                    <span class="action-icon">🗺️</span>
+                    <span class="action-text">Gérer Zones</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Colis récents -->
+        <div class="recent-colis">
+            <div class="section-header">
+                <h2>📦 Colis Récents</h2>
+                <a routerLink="/gestionnaire/colis-list" class="view-all">Voir tout →</a>
+            </div>
+
+            @if (colisRecents().length === 0) {
+            <div class="empty-state">
+                <p>Aucun colis récent</p>
+            </div>
+            } @else {
+            <div class="colis-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Colis</th>
+                            <th>Description</th>
+                            <th>Ville</th>
+                            <th>Statut</th>
+                            <th>Priorité</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (colis of colisRecents(); track colis.id) {
+                        <tr>
+                            <td class="numero-cell">{{ colis.id.substring(0, 8) }}</td>
+                            <td>{{ colis.description }}</td>
+                            <td>{{ colis.villeDestination }}</td>
+                            <td>
+                                <span class="statut-badge" [ngClass]="getStatutClass(colis.statut)">
+                                    {{ getStatutLabel(colis.statut) }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="priorite-badge" [ngClass]="'priorite-' + colis.priorite.toLowerCase()">
+                                    {{ colis.priorite }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn-details" [routerLink]="['/gestionnaire/colis', colis.id]">
+                                    Détails
+                                </button>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+    </div>
+    }
+</div>

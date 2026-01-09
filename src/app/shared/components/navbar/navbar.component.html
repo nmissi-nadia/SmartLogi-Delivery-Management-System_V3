@@ -1,85 +1,48 @@
-<nav class="navbar">
-    <div class="navbar-container">
-        <!-- Logo et titre -->
-        <div class="navbar-brand">
-            <div class="logo">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2">
-                    <path
-                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                    </path>
-                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                </svg>
-            </div>
-            <span class="brand-text">SmartLogi</span>
-        </div>
-
-        <!-- Menu de navigation -->
-        <div class="navbar-menu">
-            @if (userRoles.includes('CLIENT')) {
-            <a routerLink="/client/mes-colis" routerLinkActive="active" class="nav-link">
-                📦 Mes Colis
-            </a>
-            <a routerLink="/client/nouvelle-livraison" routerLinkActive="active" class="nav-link">
-                ➕ Nouvelle Livraison
-            </a>
-            <a routerLink="/client/historique" routerLinkActive="active" class="nav-link">
-                📜 Historique
-            </a>
-            }
-
-            @if (userRoles.includes('GESTIONNAIRE')) {
-            <a routerLink="/gestionnaire/dashboard" routerLinkActive="active" class="nav-link">
-                📊 Dashboard
-            </a>
-            <a routerLink="/gestionnaire/colis" routerLinkActive="active" class="nav-link">
-                📦 Colis
-            </a>
-            <a routerLink="/gestionnaire/clients" routerLinkActive="active" class="nav-link">
-                👥 Clients
-            </a>
-            <a routerLink="/gestionnaire/livreurs" routerLinkActive="active" class="nav-link">
-                🚚 Livreurs
-            </a>
-            }
-
-            @if (userRoles.includes('LIVREUR')) {
-            <a routerLink="/livreur/mes-colis" routerLinkActive="active" class="nav-link">
-                📦 Mes Colis
-            </a>
-            <a routerLink="/livreur/tournee" routerLinkActive="active" class="nav-link">
-                🗺️ Ma Tournée
-            </a>
-            }
-
-            @if (userRoles.includes('DESTINATAIRE')) {
-            <a routerLink="/destinataire/suivi-colis" routerLinkActive="active" class="nav-link">
-                📍 Suivi Colis
-            </a>
+<div class="sidebar" [class.collapsed]="isCollapsed()">
+    <!-- Header -->
+    <div class="sidebar-header">
+        <div class="logo">
+            <span class="logo-icon">🚚</span>
+            @if (!isCollapsed()) {
+            <span class="logo-text">SmartLogi</span>
             }
         </div>
-
-        <!-- Section utilisateur -->
-        <div class="navbar-user">
-            @if (currentUser) {
-            <div class="user-info">
-                <div class="user-avatar">
-                    {{ (currentUser.username || 'U').charAt(0).toUpperCase() }}
-                </div>
-                <span class="user-name">{{ currentUser.username }}</span>
-            </div>
-            }
-
-            <button class="btn-logout" (click)="logout()" title="Déconnexion">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
-                <span>Déconnexion</span>
-            </button>
-        </div>
+        <button class="toggle-btn" (click)="toggleSidebar()">
+            <span>{{ isCollapsed() ? '→' : '←' }}</span>
+        </button>
     </div>
-</nav>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+        @for (item of filteredMenuItems; track item.route) {
+        <a [routerLink]="item.route" routerLinkActive="active" class="nav-item" [title]="item.label">
+            <span class="nav-icon">{{ item.icon }}</span>
+            @if (!isCollapsed()) {
+            <span class="nav-label">{{ item.label }}</span>
+            }
+        </a>
+        }
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+        <!-- User Info -->
+        <div class="user-info">
+            <div class="user-avatar">{{ getUserInitials() }}</div>
+            @if (!isCollapsed()) {
+            <div class="user-details">
+                <p class="user-name">{{ currentUser()?.username }}</p>
+                <p class="user-role">{{ userRoles()[0]?.replace('ROLE_', '') }}</p>
+            </div>
+            }
+        </div>
+
+        <!-- Logout Button -->
+        <button class="logout-btn" (click)="logout()" [title]="'Déconnexion'">
+            <span class="logout-icon">🚪</span>
+            @if (!isCollapsed()) {
+            <span class="logout-text">Déconnexion</span>
+            }
+        </button>
+    </div>
+</div>
