@@ -1,6 +1,6 @@
 import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { ColisService, type Colis, type HistoriqueLivraison } from '../../../core/services/colis.service';
 import { HistoriqueService } from '../../../core/services/historique.service';
@@ -18,7 +18,7 @@ interface ColisEnrichi extends Colis {
 @Component({
     selector: 'app-colis-details',
     standalone: true,
-    imports: [CommonModule, RouterLink, NavbarComponent],
+    imports: [CommonModule, NavbarComponent],
     templateUrl: './colis-details.component.html',
     styleUrl: './colis-details.component.css'
 })

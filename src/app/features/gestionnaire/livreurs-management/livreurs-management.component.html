@@ -1,0 +1,178 @@
+<app-navbar></app-navbar>
+
+<div class="page-container">
+    <!-- En-tête -->
+    <div class="page-header">
+        <div>
+            <h1>🚛 Gestion des Livreurs</h1>
+            <p class="subtitle">Gérer les livreurs et leurs informations</p>
+        </div>
+        <button class="btn-create" (click)="ouvrirModalCreation()">
+            ➕ Nouveau Livreur
+        </button>
+    </div>
+
+    <!-- État de chargement -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des livreurs...</p>
+    </div>
+    }
+
+    <!-- Message d'erreur -->
+    @if (errorMessage()) {
+    <div class="error-message">
+        <p>{{ errorMessage() }}</p>
+    </div>
+    }
+
+    <!-- Tableau des livreurs -->
+    @if (!loading() && !errorMessage()) {
+    <div class="table-container">
+        <div class="table-header">
+            <h2>Liste des livreurs ({{ livreurs().length }})</h2>
+        </div>
+
+        @if (livreurs().length === 0) {
+        <div class="empty-state">
+            <p>Aucun livreur trouvé</p>
+            <button class="btn-create" (click)="ouvrirModalCreation()">
+                Créer le premier livreur
+            </button>
+        </div>
+        } @else {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Téléphone</th>
+                    <th>Véhicule</th>
+                    <th>Zone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (livreur of livreurs(); track livreur.id) {
+                <tr>
+                    <td class="name-cell">{{ livreur.nom }}</td>
+                    <td>{{ livreur.prenom }}</td>
+                    <td>{{ livreur.telephone }}</td>
+                    <td>{{ livreur.vehicule || '-' }}</td>
+                    <td>{{ livreur.zoneId || '-' }}</td>
+                    <td class="actions-cell">
+                        <button class="btn-action btn-edit" (click)="ouvrirModalModification(livreur)" title="Modifier">
+                            ✏️
+                        </button>
+                        <button class="btn-action btn-delete" (click)="supprimerLivreur(livreur.id)" title="Supprimer">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        }
+    </div>
+    }
+</div>
+
+<!-- Modal Création/Modification -->
+@if (showModal()) {
+<div class="modal-overlay" (click)="fermerModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>{{ isEditMode() ? '✏️ Modifier le livreur' : '➕ Nouveau livreur' }}</h2>
+            <button class="btn-close" (click)="fermerModal()">✕</button>
+        </div>
+
+        <form (ngSubmit)="soumettre()" class="modal-form">
+            <!-- Informations Utilisateur (uniquement en création) -->
+            @if (!isEditMode()) {
+            <h3 class="section-title">👤 Informations Utilisateur</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur *</label>
+                    <input type="text" id="username" [(ngModel)]="formData().username" name="username"
+                        placeholder="Ex: jdupont" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" [(ngModel)]="formData().email" name="email"
+                        placeholder="Ex: jean.dupont@example.com" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Mot de passe *</label>
+                    <input type="password" id="password" [(ngModel)]="formData().password" name="password"
+                        placeholder="Mot de passe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="firstName">Prénom (User) *</label>
+                    <input type="text" id="firstName" [(ngModel)]="formData().firstName" name="firstName"
+                        placeholder="Ex: Jean" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Nom (User) *</label>
+                <input type="text" id="lastName" [(ngModel)]="formData().lastName" name="lastName"
+                    placeholder="Ex: Dupont" required>
+            </div>
+            }
+
+            <!-- Informations Livreur -->
+            <h3 class="section-title">🚛 Informations Livreur</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nom">Nom *</label>
+                    <input type="text" id="nom" [(ngModel)]="formData().nom" name="nom" placeholder="Ex: Dupont"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom *</label>
+                    <input type="text" id="prenom" [(ngModel)]="formData().prenom" name="prenom" placeholder="Ex: Jean"
+                        required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="telephone">Téléphone *</label>
+                    <input type="tel" id="telephone" [(ngModel)]="formData().telephone" name="telephone"
+                        placeholder="Ex: 0612345678" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="zoneId">Zone</label>
+                    <input type="text" id="zoneId" [(ngModel)]="formData().zoneId" name="zoneId"
+                        placeholder="ID de la zone">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="vehicule">Véhicule</label>
+                <input type="text" id="vehicule" [(ngModel)]="formData().vehicule" name="vehicule"
+                    placeholder="Ex: Camionnette">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" (click)="fermerModal()">
+                    Annuler
+                </button>
+                <button type="submit" class="btn-submit">
+                    {{ isEditMode() ? 'Modifier' : 'Créer' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+}

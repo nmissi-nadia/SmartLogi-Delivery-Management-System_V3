@@ -37,8 +37,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                         console.error('URL de la requête:', req.url);
                         console.error("Détails de l'erreur:", error);
 
-                        // TEMPORAIRE: Commenté pour diagnostiquer
-                        // authService.logout();
+                        authService.logout();
                         break;
 
                     case 403:

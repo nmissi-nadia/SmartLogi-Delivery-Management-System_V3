@@ -114,67 +114,12 @@
     margin: 0;
 }
 
-/* Actions rapides */
-.quick-actions {
-    background: var(--surface-color);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.quick-actions h2 {
-    font-size: 1.5rem;
-    color: var(--text-primary);
-    margin: 0 0 1rem 0;
-}
-
-.actions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.action-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1.5rem;
-    background: var(--background-dark);
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.action-btn:hover {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    transform: translateY(-2px);
-}
-
-.action-btn:hover .action-text {
-    color: var(--background-dark);
-}
-
-.action-icon {
-    font-size: 2rem;
-}
-
-.action-text {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    transition: color 0.3s ease;
-}
-
 /* Colis récents */
 .recent-colis {
-    background: var(--surface-color);
+    background: #FFFFFF;
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .section-header {
@@ -182,23 +127,30 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #FFC107;
 }
 
 .section-header h2 {
     font-size: 1.5rem;
-    color: var(--text-primary);
+    color: #1A1A1A;
     margin: 0;
+    font-weight: 700;
 }
 
 .view-all {
-    color: var(--primary-color);
+    color: #FFC107;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
+    background: #FFF9E6;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
 }
 
 .view-all:hover {
-    color: #e6a800;
+    color: #1A1A1A;
+    background: #FFC107;
 }
 
 /* Tableau */
@@ -212,30 +164,39 @@ table {
 }
 
 thead {
-    background: var(--background-dark);
+    background: #FFC107;
 }
 
 th {
     padding: 1rem;
     text-align: left;
-    font-weight: 600;
-    color: var(--text-primary);
-    border-bottom: 2px solid var(--primary-color);
+    font-weight: 700;
+    color: #1A1A1A;
+    border-bottom: 2px solid #FFD54F;
 }
 
 td {
     padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-primary);
+    border-bottom: 1px solid #F5F5F5;
+    color: #1A1A1A;
+}
+
+tbody tr {
+    background: #FFFFFF;
+}
+
+tbody tr:nth-child(even) {
+    background: #FFFBF0;
 }
 
 tbody tr:hover {
-    background: var(--background-dark);
+    background: #FFF9E6;
 }
 
 .numero-cell {
     font-family: monospace;
     font-weight: 600;
+    color: #1A1A1A;
 }
 
 /* Badges */

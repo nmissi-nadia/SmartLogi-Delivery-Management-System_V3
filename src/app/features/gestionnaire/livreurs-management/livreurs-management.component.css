@@ -1,0 +1,379 @@
+.page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    color: #FFFFFF;
+    margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #B0B0B0;
+    margin: 0;
+}
+
+.btn-create {
+    padding: 0.875rem 1.5rem;
+    background: #FFC107;
+    border: none;
+    border-radius: 8px;
+    color: #1A1A1A;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-create:hover {
+    background: #FFD54F;
+    transform: translateY(-2px);
+}
+
+/* États */
+.loading-state,
+.error-message,
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #404040;
+    border-top-color: #FFC107;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error-message {
+    background: #e74c3c;
+    color: white;
+    border-radius: 8px;
+}
+
+.empty-state {
+    color: #B0B0B0;
+}
+
+/* Tableau - Couleurs Blanc et Jaune */
+.table-container {
+    background: #FFFFFF;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.table-header {
+    padding: 1.5rem;
+    background: #FFC107;
+    border-bottom: 2px solid #FFD54F;
+}
+
+.table-header h2 {
+    font-size: 1.25rem;
+    color: #1A1A1A;
+    margin: 0;
+    font-weight: 700;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #FFC107;
+}
+
+th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: #1A1A1A;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid #FFD54F;
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid #F5F5F5;
+    color: #1A1A1A;
+}
+
+tbody tr {
+    background: #FFFFFF;
+}
+
+tbody tr:nth-child(even) {
+    background: #FFFBF0;
+}
+
+tbody tr:hover {
+    background: #FFF9E6;
+}
+
+.name-cell {
+    font-weight: 600;
+    color: #1A1A1A;
+}
+
+.email-cell {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Actions */
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-action {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-edit {
+    background: #FFC107;
+    color: #1A1A1A;
+}
+
+.btn-edit:hover {
+    background: #FFD54F;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: #FFFFFF;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 1000px;
+    border: 3px solid #FFC107;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: #FFC107;
+    border-bottom: 2px solid #FFD54F;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    color: #1A1A1A;
+    margin: 0;
+    font-weight: 700;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    color: #1A1A1A;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    font-weight: 700;
+}
+
+.btn-close:hover {
+    color: #666;
+}
+
+.modal-form {
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    column-gap: 3rem;
+}
+
+/* Sections du formulaire */
+.form-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    color: #1A1A1A;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #FFC107;
+    font-weight: 700;
+    grid-column: 1 / -1;
+}
+
+/* Les actions prennent toute la largeur */
+.modal-actions {
+    grid-column: 1 / -1;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #1A1A1A;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    background: #FFFFFF;
+    border: 2px solid #E0E0E0;
+    border-radius: 6px;
+    color: #1A1A1A;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #FFC107;
+}
+
+.user-select {
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.btn-cancel {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 2px solid #E0E0E0;
+    border-radius: 6px;
+    color: #666;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    border-color: #FFC107;
+    color: #1A1A1A;
+}
+
+.btn-submit {
+    padding: 0.75rem 1.5rem;
+    background: #FFC107;
+    border: none;
+    border-radius: 6px;
+    color: #1A1A1A;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: #FFD54F;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-container {
+        padding: 1rem;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .data-table {
+        font-size: 0.875rem;
+    }
+
+    th,
+    td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+    }
+
+    .modal-form {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
