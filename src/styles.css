@@ -10,13 +10,16 @@ body {
     background-color: var(--background-dark);
     color: var(--text-primary);
     line-height: 1.6;
+}
+
+/* Classe pour les pages avec sidebar */
+.with-sidebar {
     padding-left: 260px;
-    /* Espace pour la sidebar */
     transition: padding-left 0.3s ease;
 }
 
 /* Ajuster le padding quand la sidebar est collapsed */
-body.sidebar-collapsed {
+.with-sidebar.sidebar-collapsed {
     padding-left: 80px;
 }
 

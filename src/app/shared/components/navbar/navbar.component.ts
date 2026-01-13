@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -20,7 +20,7 @@ interface MenuItem {
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.css'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
 
@@ -49,7 +49,7 @@ export class NavbarComponent {
         { label: 'Suivi Colis', icon: '📍', route: '/destinataire/suivi-colis', roles: ['ROLE_DESTINATAIRE'] }
     ];
 
-    constructor() {
+    ngOnInit(): void {
         // S'abonner aux changements de l'utilisateur
         this.authService.currentUser$.subscribe(user => {
             this.currentUser.set(user);
@@ -57,6 +57,14 @@ export class NavbarComponent {
 
         // Charger les rôles
         this.userRoles.set(this.authService.getUserRoles());
+
+        // Ajouter la classe 'with-sidebar' au body
+        document.body.classList.add('with-sidebar');
+    }
+
+    ngOnDestroy(): void {
+        // Retirer la classe quand le composant est détruit
+        document.body.classList.remove('with-sidebar');
     }
 
     /**
@@ -74,6 +82,13 @@ export class NavbarComponent {
      */
     toggleSidebar(): void {
         this.isCollapsed.update(value => !value);
+
+        // Ajouter/retirer la classe collapsed sur le body
+        if (this.isCollapsed()) {
+            document.body.classList.add('sidebar-collapsed');
+        } else {
+            document.body.classList.remove('sidebar-collapsed');
+        }
     }
 
     /**

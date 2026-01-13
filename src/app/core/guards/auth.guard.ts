@@ -13,11 +13,16 @@ export const authGuard: CanActivateFn = (route, state) => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    if (authService.isAuthenticated()) {
+    const isAuth = authService.isAuthenticated();
+    console.log('AuthGuard - Route:', state.url);
+    console.log('AuthGuard - isAuthenticated:', isAuth);
+
+    if (isAuth) {
+        console.log('AuthGuard - Access granted');
         return true;
     }
 
-    // Rediriger vers la page de login en conservant l'URL demandée
+    console.log('AuthGuard - Access denied, redirecting to login');
     router.navigate(['/auth/login'], {
         queryParams: { returnUrl: state.url }
     });

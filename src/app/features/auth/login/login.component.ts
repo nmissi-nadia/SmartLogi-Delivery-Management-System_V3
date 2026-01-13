@@ -118,4 +118,20 @@ export class LoginComponent {
 
         return '';
     }
+
+    /**
+     * Connexion avec Google OAuth2
+     */
+    loginWithGoogle(): void {
+        // Rediriger vers l'endpoint OAuth2 Google du backend
+        window.location.href = `${this.authService['API_URL']}/oauth2/authorize/google`;
+    }
+
+    /**
+     * Connexion avec Okta OAuth2
+     */
+    loginWithOkta(): void {
+        // Rediriger vers l'endpoint OAuth2 Okta du backend
+        window.location.href = `${this.authService['API_URL']}/oauth2/authorize/okta`;
+    }
 }

@@ -1,0 +1,108 @@
+<app-navbar></app-navbar>
+
+<div class="page-container">
+    <!-- En-tête -->
+    <div class="page-header">
+        <div>
+            <h1>🗺️ Gestion des Zones</h1>
+            <p class="subtitle">Gérer les zones de livraison</p>
+        </div>
+        <button class="btn-create" (click)="ouvrirModalCreation()">
+            ➕ Nouvelle Zone
+        </button>
+    </div>
+
+    <!-- État de chargement -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des zones...</p>
+    </div>
+    }
+
+    <!-- Message d'erreur -->
+    @if (errorMessage()) {
+    <div class="error-message">
+        <p>{{ errorMessage() }}</p>
+    </div>
+    }
+
+    <!-- Tableau des zones -->
+    @if (!loading() && !errorMessage()) {
+    <div class="table-container">
+        <div class="table-header">
+            <h2>Liste des zones ({{ zones().length }})</h2>
+        </div>
+
+        @if (zones().length === 0) {
+        <div class="empty-state">
+            <p>Aucune zone trouvée</p>
+            <button class="btn-create" (click)="ouvrirModalCreation()">
+                Créer la première zone
+            </button>
+        </div>
+        } @else {
+        <table class="zones-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Code Postal</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (zone of zones(); track zone.id) {
+                <tr>
+                    <td class="zone-name">{{ zone.nom }}</td>
+                    <td class="code-postal">{{ zone.codePostal }}</td>
+                    <td class="actions-cell">
+                        <button class="btn-action btn-edit" (click)="ouvrirModalModification(zone)" title="Modifier">
+                            ✏️
+                        </button>
+                        <button class="btn-action btn-delete" (click)="supprimerZone(zone.id)" title="Supprimer">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        }
+    </div>
+    }
+</div>
+
+<!-- Modal Création/Modification -->
+@if (showModal()) {
+<div class="modal-overlay" (click)="fermerModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>{{ isEditMode() ? '✏️ Modifier la zone' : '➕ Nouvelle zone' }}</h2>
+            <button class="btn-close" (click)="fermerModal()">✕</button>
+        </div>
+
+        <form (ngSubmit)="soumettre()" class="modal-form">
+            <div class="form-group">
+                <label for="nom">Nom de la zone *</label>
+                <input type="text" id="nom" [(ngModel)]="formData().nom" name="nom"
+                    placeholder="Ex: Zone Nord Paris 75001" required>
+            </div>
+
+            <div class="form-group">
+                <label for="codePostal">Code Postal *</label>
+                <input type="text" id="codePostal" [(ngModel)]="formData().codePostal" name="codePostal"
+                    placeholder="Ex: 75001" required>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" (click)="fermerModal()">
+                    Annuler
+                </button>
+                <button type="submit" class="btn-submit">
+                    {{ isEditMode() ? 'Modifier' : 'Créer' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+}

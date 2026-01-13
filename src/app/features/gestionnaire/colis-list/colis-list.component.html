@@ -1,0 +1,144 @@
+<app-navbar></app-navbar>
+
+<div class="page-container">
+    <!-- En-tête -->
+    <div class="page-header">
+        <h1>📋 Gestion des Colis</h1>
+        <p class="subtitle">Tous les colis du système</p>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters-section">
+        <div class="filters-grid">
+            <!-- Recherche -->
+            <div class="filter-item">
+                <label>🔍 Recherche</label>
+                <input type="text" [(ngModel)]="recherche" (ngModelChange)="appliquerFiltres()"
+                    placeholder="N° colis, description, ville..." class="filter-input">
+            </div>
+
+            <!-- Filtre Statut -->
+            <div class="filter-item">
+                <label>📊 Statut</label>
+                <select [(ngModel)]="filtreStatut" (ngModelChange)="appliquerFiltres()" class="filter-select">
+                    <option value="">Tous</option>
+                    <option value="CREE">Créé</option>
+                    <option value="COLLECTE">Collecté</option>
+                    <option value="EN_STOCK">En stock</option>
+                    <option value="EN_TRANSIT">En transit</option>
+                    <option value="LIVRE">Livré</option>
+                </select>
+            </div>
+
+            <!-- Filtre Priorité -->
+            <div class="filter-item">
+                <label>⚡ Priorité</label>
+                <select [(ngModel)]="filtrePriorite" (ngModelChange)="appliquerFiltres()" class="filter-select">
+                    <option value="">Toutes</option>
+                    <option value="HAUTE">Haute</option>
+                    <option value="MOYENNE">Moyenne</option>
+                    <option value="BASSE">Basse</option>
+                </select>
+            </div>
+
+            <!-- Filtre Ville -->
+            <div class="filter-item">
+                <label>🏙️ Ville</label>
+                <input type="text" [(ngModel)]="filtreVille" (ngModelChange)="appliquerFiltres()"
+                    placeholder="Ville de destination" class="filter-input">
+            </div>
+        </div>
+
+        <button class="btn-reset" (click)="reinitialiserFiltres()">
+            🔄 Réinitialiser
+        </button>
+    </div>
+
+    <!-- État de chargement -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des colis...</p>
+    </div>
+    }
+
+    <!-- Message d'erreur -->
+    @if (errorMessage()) {
+    <div class="error-message">
+        <p>{{ errorMessage() }}</p>
+    </div>
+    }
+
+    <!-- Tableau des colis -->
+    @if (!loading() && !errorMessage()) {
+    <div class="table-container">
+        <div class="table-header">
+            <h2>Résultats ({{ colisFiltres().length }} colis)</h2>
+        </div>
+
+        @if (colisFiltres().length === 0) {
+        <div class="empty-state">
+            <p>Aucun colis trouvé</p>
+        </div>
+        } @else {
+        <table class="colis-table">
+            <thead>
+                <tr>
+                    <th>N° Colis</th>
+                    <th>Description</th>
+                    <th>Ville</th>
+                    <th>Poids</th>
+                    <th>Priorité</th>
+                    <th>Statut</th>
+                    <th>Livreur</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (colis of colisPagines; track colis.id) {
+                <tr>
+                    <td class="numero-cell">{{ colis.id.substring(0, 8) }}</td>
+                    <td>{{ colis.description }}</td>
+                    <td>{{ colis.villeDestination }}</td>
+                    <td>{{ colis.poids }} kg</td>
+                    <td>
+                        <span class="priorite-badge" [ngClass]="getPrioriteClass(colis.priorite)">
+                            {{ colis.priorite }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="statut-badge" [ngClass]="getStatutClass(colis.statut)">
+                            {{ getStatutLabel(colis.statut) }}
+                        </span>
+                    </td>
+                    <td>{{ colis.livreurId ? ('ID: ' + colis.livreurId.substring(0, 8)) : '-' }}</td>
+                    <td class="actions-cell">
+                        <button class="btn-action btn-details" [routerLink]="['/gestionnaire/colis', colis.id]"
+                            title="Voir détails">
+                            👁️
+                        </button>
+                        <button class="btn-action btn-delete" (click)="supprimerColis(colis.id)" title="Supprimer">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="btn-page" (click)="changerPage(page() - 1)" [disabled]="page() === 0">
+                ← Précédent
+            </button>
+            <span class="page-info">
+                Page {{ page() + 1 }} / {{ totalPages() }}
+            </span>
+            <button class="btn-page" (click)="changerPage(page() + 1)" [disabled]="page() >= totalPages() - 1">
+                Suivant →
+            </button>
+        </div>
+        }
+    </div>
+    }
+</div>

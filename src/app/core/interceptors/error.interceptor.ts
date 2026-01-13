@@ -34,9 +34,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                         // Non autorisé - Token invalide ou expiré
                         errorMessage = 'Session expirée. Veuillez vous reconnecter.';
                         console.error('Erreur 401: Non autorisé');
+                        console.error('URL de la requête:', req.url);
+                        console.error("Détails de l'erreur:", error);
 
-                        // Déconnecter l'utilisateur
-                        authService.logout();
+                        // TEMPORAIRE: Commenté pour diagnostiquer
+                        // authService.logout();
                         break;
 
                     case 403:
