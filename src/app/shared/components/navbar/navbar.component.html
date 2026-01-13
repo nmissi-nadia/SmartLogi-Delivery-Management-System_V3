@@ -12,15 +12,41 @@
         </button>
     </div>
 
-    <!-- Navigation -->
-    <nav class="sidebar-nav">
+    <!-- Menu Items -->
+    <nav class="nav-menu">
         @for (item of filteredMenuItems; track item.route) {
-        <a [routerLink]="item.route" routerLinkActive="active" class="nav-item" [title]="item.label">
+        <a [routerLink]="item.route" routerLinkActive="active" class="nav-item">
             <span class="nav-icon">{{ item.icon }}</span>
             @if (!isCollapsed()) {
             <span class="nav-label">{{ item.label }}</span>
             }
         </a>
+        }
+
+        <!-- Sous-menu Gestion (Gestionnaire uniquement) -->
+        @if (isGestionnaire()) {
+        <div class="nav-submenu">
+            <button class="nav-item submenu-trigger" (click)="toggleSubMenu(gestionnaireSubMenus.gestion)">
+                <span class="nav-icon">{{ gestionnaireSubMenus.gestion.icon }}</span>
+                @if (!isCollapsed()) {
+                <span class="nav-label">{{ gestionnaireSubMenus.gestion.label }}</span>
+                <span class="submenu-arrow" [class.expanded]="gestionnaireSubMenus.gestion.expanded()">
+                    ▼
+                </span>
+                }
+            </button>
+
+            @if (gestionnaireSubMenus.gestion.expanded() && !isCollapsed()) {
+            <div class="submenu-items">
+                @for (subItem of gestionnaireSubMenus.gestion.items; track subItem.route) {
+                <a [routerLink]="subItem.route" routerLinkActive="active" class="submenu-item">
+                    <span class="nav-icon">{{ subItem.icon }}</span>
+                    <span class="nav-label">{{ subItem.label }}</span>
+                </a>
+                }
+            </div>
+            }
+        </div>
         }
     </nav>
 

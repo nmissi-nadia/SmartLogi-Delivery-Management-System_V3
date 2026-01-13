@@ -30,17 +30,13 @@ export class NavbarComponent implements OnInit {
 
     menuItems: MenuItem[] = [
         // Client
-        { label: 'Mes Colis', icon: '📦', route: '/client/mes-colis', roles: ['ROLE_CLIENT'] },
+        { label: 'Dashboard', icon: '📊', route: '/client/dashboard', roles: ['ROLE_CLIENT'] },
         { label: 'Nouvelle Livraison', icon: '➕', route: '/client/nouvelle-livraison', roles: ['ROLE_CLIENT'] },
+        { label: 'Mes Colis', icon: '📦', route: '/client/mes-colis', roles: ['ROLE_CLIENT'] },
         { label: 'Historique', icon: '📜', route: '/client/historique', roles: ['ROLE_CLIENT'] },
 
-        // Gestionnaire
+        // Gestionnaire - Dashboard
         { label: 'Dashboard', icon: '📊', route: '/gestionnaire/dashboard', roles: ['ROLE_GESTIONNAIRE'] },
-        { label: 'Tous les Colis', icon: '📋', route: '/gestionnaire/colis-list', roles: ['ROLE_GESTIONNAIRE'] },
-        { label: 'Clients', icon: '👥', route: '/gestionnaire/clients-management', roles: ['ROLE_GESTIONNAIRE'] },
-        { label: 'Livreurs', icon: '🚛', route: '/gestionnaire/livreurs-management', roles: ['ROLE_GESTIONNAIRE'] },
-        { label: 'Zones', icon: '🗺️', route: '/gestionnaire/zones', roles: ['ROLE_GESTIONNAIRE'] },
-        { label: 'Utilisateurs', icon: '👤', route: '/gestionnaire/users', roles: ['ROLE_GESTIONNAIRE'] },
 
         // Livreur
         { label: 'Mes Livraisons', icon: '🚚', route: '/livreur/mes-colis', roles: ['ROLE_LIVREUR'] },
@@ -49,6 +45,22 @@ export class NavbarComponent implements OnInit {
         // Destinataire
         { label: 'Suivi Colis', icon: '📍', route: '/destinataire/suivi-colis', roles: ['ROLE_DESTINATAIRE'] }
     ];
+
+    // Sous-menus pour le gestionnaire
+    gestionnaireSubMenus = {
+        gestion: {
+            label: 'Gestion',
+            icon: '⚙️',
+            expanded: signal(false),
+            items: [
+                { label: 'Colis', icon: '📦', route: '/gestionnaire/colis-list' },
+                { label: 'Clients', icon: '👥', route: '/gestionnaire/clients-management' },
+                { label: 'Livreurs', icon: '🚛', route: '/gestionnaire/livreurs-management' },
+                { label: 'Zones', icon: '🗺️', route: '/gestionnaire/zones' },
+                { label: 'Utilisateurs', icon: '👤', route: '/gestionnaire/users' }
+            ]
+        }
+    };
 
     ngOnInit(): void {
         // S'abonner aux changements de l'utilisateur
@@ -98,6 +110,20 @@ export class NavbarComponent implements OnInit {
     logout(): void {
         this.authService.logout();
         this.router.navigate(['/login']);
+    }
+
+    /**
+     * Toggle un sous-menu
+     */
+    toggleSubMenu(subMenu: any): void {
+        subMenu.expanded.update((value: boolean) => !value);
+    }
+
+    /**
+     * Vérifie si l'utilisateur a le rôle gestionnaire
+     */
+    isGestionnaire(): boolean {
+        return this.userRoles().includes('ROLE_GESTIONNAIRE');
     }
 
     /**
