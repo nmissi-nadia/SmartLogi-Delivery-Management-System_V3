@@ -1,0 +1,99 @@
+<app-navbar></app-navbar>
+
+<div class="page-container">
+    <!-- En-tête -->
+    <div class="page-header">
+        <div>
+            <h1>🔐 Gestion des Rôles</h1>
+            <p class="subtitle">Gérer les permissions des rôles</p>
+        </div>
+    </div>
+
+    <!-- État de chargement -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des rôles...</p>
+    </div>
+    }
+
+    <!-- Message d'erreur -->
+    @if (errorMessage()) {
+    <div class="error-message">
+        <p>{{ errorMessage() }}</p>
+    </div>
+    }
+
+    <!-- Tableau des rôles -->
+    @if (!loading() && !errorMessage()) {
+    <div class="table-container">
+        <div class="table-header">
+            <h2>Liste des rôles ({{ roles().length }})</h2>
+        </div>
+
+        @if (roles().length === 0) {
+        <div class="empty-state">
+            <p>Aucun rôle trouvé</p>
+        </div>
+        } @else {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Permissions</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (role of roles(); track role.id) {
+                <tr>
+                    <td class="role-name">{{ role.name }}</td>
+                    <td>
+                        <span class="permissions-count">
+                            {{ role.permissions?.length || 0 }} permission(s)
+                        </span>
+                    </td>
+                    <td class="actions-cell">
+                        <button class="btn-action btn-permissions" (click)="ouvrirModalPermissions(role)"
+                            title="Gérer les permissions">
+                            🔑 Gérer
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        }
+    </div>
+    }
+</div>
+
+<!-- Modal Gestion des Permissions -->
+@if (showPermissionsModal()) {
+<div class="modal-overlay" (click)="fermerModal()">
+    <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>🔑 Gérer les permissions - {{ currentRole()?.name }}</h2>
+            <button class="btn-close" (click)="fermerModal()">✕</button>
+        </div>
+
+        <div class="permissions-grid">
+            @for (permission of permissions(); track permission.id) {
+            <label class="permission-item" [class.selected]="isPermissionSelected(permission.id)">
+                <input type="checkbox" [checked]="isPermissionSelected(permission.id)"
+                    (change)="togglePermission(permission.id)">
+                <div class="permission-info">
+                    <span class="permission-name">{{ permission.name }}</span>
+                </div>
+            </label>
+            }
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="fermerModal()">
+                Fermer
+            </button>
+        </div>
+    </div>
+</div>
+}

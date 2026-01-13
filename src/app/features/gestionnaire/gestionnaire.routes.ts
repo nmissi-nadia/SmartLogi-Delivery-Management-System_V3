@@ -34,6 +34,10 @@ export const GESTIONNAIRE_ROUTES: Routes = [
         loadComponent: () => import('./users-management/users-management.component').then(m => m.UsersManagementComponent)
     },
     {
+        path: 'roles',
+        loadComponent: () => import('./roles-management/roles-management.component').then(m => m.RolesManagementComponent)
+    },
+    {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'

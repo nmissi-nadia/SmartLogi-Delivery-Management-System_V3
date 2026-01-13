@@ -57,7 +57,8 @@ export class NavbarComponent implements OnInit {
                 { label: 'Clients', icon: '👥', route: '/gestionnaire/clients-management' },
                 { label: 'Livreurs', icon: '🚛', route: '/gestionnaire/livreurs-management' },
                 { label: 'Zones', icon: '🗺️', route: '/gestionnaire/zones' },
-                { label: 'Utilisateurs', icon: '👤', route: '/gestionnaire/users' }
+                { label: 'Utilisateurs', icon: '👤', route: '/gestionnaire/users' },
+                { label: 'Rôles', icon: '🔐', route: '/gestionnaire/roles' }
             ]
         }
     };
