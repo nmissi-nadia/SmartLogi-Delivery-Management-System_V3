@@ -1,0 +1,152 @@
+<app-navbar></app-navbar>
+
+<div class="page-container">
+    <!-- En-tête -->
+    <div class="page-header">
+        <div>
+            <h1>👥 Gestion des Utilisateurs</h1>
+            <p class="subtitle">Gérer les comptes utilisateurs</p>
+        </div>
+        <button class="btn-create" (click)="ouvrirModalCreation()">
+            ➕ Nouvel Utilisateur
+        </button>
+    </div>
+
+    <!-- État de chargement -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des utilisateurs...</p>
+    </div>
+    }
+
+    <!-- Message d'erreur -->
+    @if (errorMessage()) {
+    <div class="error-message">
+        <p>{{ errorMessage() }}</p>
+    </div>
+    }
+
+    <!-- Tableau des utilisateurs -->
+    @if (!loading() && !errorMessage()) {
+    <div class="table-container">
+        <div class="table-header">
+            <h2>Liste des utilisateurs ({{ users().length }})</h2>
+        </div>
+
+        @if (users().length === 0) {
+        <div class="empty-state">
+            <p>Aucun utilisateur trouvé</p>
+            <button class="btn-create" (click)="ouvrirModalCreation()">
+                Créer le premier utilisateur
+            </button>
+        </div>
+        } @else {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nom d'utilisateur</th>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (user of users(); track user.id) {
+                <tr>
+                    <td class="username-cell">{{ user.username }}</td>
+                    <td>{{ user.firstName }}</td>
+                    <td>{{ user.lastName }}</td>
+                    <td class="email-cell">{{ user.email }}</td>
+                    <td>
+                        <span class="status-badge" [class.active]="user.enabled" [class.inactive]="!user.enabled">
+                            {{ user.enabled ? 'Actif' : 'Inactif' }}
+                        </span>
+                    </td>
+                    <td class="actions-cell">
+                        <button class="btn-action btn-toggle" (click)="toggleEnabled(user)"
+                            [title]="user.enabled ? 'Désactiver' : 'Activer'">
+                            {{ user.enabled ? '🔒' : '🔓' }}
+                        </button>
+                        <button class="btn-action btn-edit" (click)="ouvrirModalModification(user)" title="Modifier">
+                            ✏️
+                        </button>
+                        <button class="btn-action btn-delete" (click)="supprimerUtilisateur(user.id)" title="Supprimer">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        }
+    </div>
+    }
+</div>
+
+<!-- Modal Création/Modification -->
+@if (showModal()) {
+<div class="modal-overlay" (click)="fermerModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>{{ isEditMode() ? '✏️ Modifier l\'utilisateur' : '➕ Nouvel utilisateur' }}</h2>
+            <button class="btn-close" (click)="fermerModal()">✕</button>
+        </div>
+
+        <form (ngSubmit)="soumettre()" class="modal-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur *</label>
+                    <input type="text" id="username" [(ngModel)]="formData().username" name="username"
+                        placeholder="Ex: jdupont" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" [(ngModel)]="formData().email" name="email"
+                        placeholder="Ex: jean.dupont@example.com" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">Prénom *</label>
+                    <input type="text" id="firstName" [(ngModel)]="formData().firstName" name="firstName"
+                        placeholder="Ex: Jean" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Nom *</label>
+                    <input type="text" id="lastName" [(ngModel)]="formData().lastName" name="lastName"
+                        placeholder="Ex: Dupont" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe {{ isEditMode() ? '(laisser vide pour ne pas changer)' : '*'
+                    }}</label>
+                <input type="password" id="password" [(ngModel)]="formData().password" name="password"
+                    placeholder="Mot de passe" [required]="!isEditMode()">
+            </div>
+
+            <div class="form-group checkbox-group">
+                <label>
+                    <input type="checkbox" [(ngModel)]="formData().enabled" name="enabled">
+                    <span>Compte actif</span>
+                </label>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" (click)="fermerModal()">
+                    Annuler
+                </button>
+                <button type="submit" class="btn-submit">
+                    {{ isEditMode() ? 'Modifier' : 'Créer' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+}

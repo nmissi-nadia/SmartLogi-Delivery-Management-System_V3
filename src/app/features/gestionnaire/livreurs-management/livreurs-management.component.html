@@ -88,42 +88,16 @@
         </div>
 
         <form (ngSubmit)="soumettre()" class="modal-form">
-            <!-- Informations Utilisateur (uniquement en création) -->
+            <!-- Sélection Utilisateur (uniquement en création) -->
             @if (!isEditMode()) {
-            <h3 class="section-title">👤 Informations Utilisateur</h3>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="username">Nom d'utilisateur *</label>
-                    <input type="text" id="username" [(ngModel)]="formData().username" name="username"
-                        placeholder="Ex: jdupont" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email *</label>
-                    <input type="email" id="email" [(ngModel)]="formData().email" name="email"
-                        placeholder="Ex: jean.dupont@example.com" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="password">Mot de passe *</label>
-                    <input type="password" id="password" [(ngModel)]="formData().password" name="password"
-                        placeholder="Mot de passe" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="firstName">Prénom (User) *</label>
-                    <input type="text" id="firstName" [(ngModel)]="formData().firstName" name="firstName"
-                        placeholder="Ex: Jean" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="lastName">Nom (User) *</label>
-                <input type="text" id="lastName" [(ngModel)]="formData().lastName" name="lastName"
-                    placeholder="Ex: Dupont" required>
+            <div class="form-group full-width">
+                <label for="userId">👤 Sélectionner un utilisateur *</label>
+                <select id="userId" [(ngModel)]="formData().userId" name="userId" required class="user-select">
+                    <option value="">-- Choisir un utilisateur --</option>
+                    @for (user of users(); track user.id) {
+                    <option [value]="user.id">{{ user.firstName }} {{ user.lastName }} ({{ user.email }})</option>
+                    }
+                </select>
             </div>
             }
 

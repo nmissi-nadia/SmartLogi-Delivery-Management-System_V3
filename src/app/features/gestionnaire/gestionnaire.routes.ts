@@ -30,6 +30,10 @@ export const GESTIONNAIRE_ROUTES: Routes = [
         loadComponent: () => import('./zones-management/zones-management.component').then(m => m.ZonesManagementComponent)
     },
     {
+        path: 'users',
+        loadComponent: () => import('./users-management/users-management.component').then(m => m.UsersManagementComponent)
+    },
+    {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'

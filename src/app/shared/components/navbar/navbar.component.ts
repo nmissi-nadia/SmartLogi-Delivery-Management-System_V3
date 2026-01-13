@@ -40,6 +40,7 @@ export class NavbarComponent implements OnInit {
         { label: 'Clients', icon: '👥', route: '/gestionnaire/clients-management', roles: ['ROLE_GESTIONNAIRE'] },
         { label: 'Livreurs', icon: '🚛', route: '/gestionnaire/livreurs-management', roles: ['ROLE_GESTIONNAIRE'] },
         { label: 'Zones', icon: '🗺️', route: '/gestionnaire/zones', roles: ['ROLE_GESTIONNAIRE'] },
+        { label: 'Utilisateurs', icon: '👤', route: '/gestionnaire/users', roles: ['ROLE_GESTIONNAIRE'] },
 
         // Livreur
         { label: 'Mes Livraisons', icon: '🚚', route: '/livreur/mes-colis', roles: ['ROLE_LIVREUR'] },
