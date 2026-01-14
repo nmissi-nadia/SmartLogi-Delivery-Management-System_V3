@@ -1,57 +1,62 @@
 <app-navbar></app-navbar>
 
 <div class="page-container">
-    <!-- En-tête -->
+    <!-- En-tête avec statistiques -->
     <div class="page-header">
-        <h1>📋 Gestion des Colis</h1>
-        <p class="subtitle">Tous les colis du système</p>
+        <div>
+            <h1>📦 Gestion des Colis</h1>
+            <p class="subtitle">{{ totalElements() }} colis au total</p>
+        </div>
+        <div class="stats-quick">
+            @for (stat of stats() | keyvalue; track stat.key) {
+            <div class="stat-card">
+                <span class="stat-value">{{ stat.value }}</span>
+                <span class="stat-label">{{ stat.key }}</span>
+            </div>
+            }
+        </div>
     </div>
 
-    <!-- Filtres -->
+    <!-- Barre de recherche et filtres -->
     <div class="filters-section">
-        <div class="filters-grid">
-            <!-- Recherche -->
-            <div class="filter-item">
-                <label>🔍 Recherche</label>
-                <input type="text" [(ngModel)]="recherche" (ngModelChange)="appliquerFiltres()"
-                    placeholder="N° colis, description, ville..." class="filter-input">
-            </div>
-
-            <!-- Filtre Statut -->
-            <div class="filter-item">
-                <label>📊 Statut</label>
-                <select [(ngModel)]="filtreStatut" (ngModelChange)="appliquerFiltres()" class="filter-select">
-                    <option value="">Tous</option>
-                    <option value="CREE">Créé</option>
-                    <option value="COLLECTE">Collecté</option>
-                    <option value="EN_STOCK">En stock</option>
-                    <option value="EN_TRANSIT">En transit</option>
-                    <option value="LIVRE">Livré</option>
-                </select>
-            </div>
-
-            <!-- Filtre Priorité -->
-            <div class="filter-item">
-                <label>⚡ Priorité</label>
-                <select [(ngModel)]="filtrePriorite" (ngModelChange)="appliquerFiltres()" class="filter-select">
-                    <option value="">Toutes</option>
-                    <option value="HAUTE">Haute</option>
-                    <option value="MOYENNE">Moyenne</option>
-                    <option value="BASSE">Basse</option>
-                </select>
-            </div>
-
-            <!-- Filtre Ville -->
-            <div class="filter-item">
-                <label>🏙️ Ville</label>
-                <input type="text" [(ngModel)]="filtreVille" (ngModelChange)="appliquerFiltres()"
-                    placeholder="Ville de destination" class="filter-input">
-            </div>
+        <div class="search-bar">
+            <input type="text" [(ngModel)]="searchKeyword" (ngModelChange)="onSearchChange($event)"
+                placeholder="🔍 Rechercher par numéro, destinataire, ville..." class="search-input">
         </div>
 
-        <button class="btn-reset" (click)="reinitialiserFiltres()">
-            🔄 Réinitialiser
-        </button>
+        <div class="filters-row">
+            <select [(ngModel)]="filters().statut" (change)="appliquerFiltres()" class="filter-select">
+                <option value="">Tous les statuts</option>
+                @for (statut of statutOptions; track statut) {
+                <option [value]="statut">{{ statut }}</option>
+                }
+            </select>
+
+            <select [(ngModel)]="filters().priorite" (change)="appliquerFiltres()" class="filter-select">
+                <option value="">Toutes les priorités</option>
+                @for (priorite of prioriteOptions; track priorite) {
+                <option [value]="priorite">{{ priorite }}</option>
+                }
+            </select>
+
+            <select [(ngModel)]="filters().zoneId" (change)="appliquerFiltres()" class="filter-select">
+                <option value="">Toutes les zones</option>
+                @for (zone of zones(); track zone.id) {
+                <option [value]="zone.id">{{ zone.nom }}</option>
+                }
+            </select>
+
+            <input type="text" [(ngModel)]="filters().ville" (change)="appliquerFiltres()" placeholder="Ville"
+                class="filter-input">
+
+            <input type="date" [(ngModel)]="filters().dateDebut" (change)="appliquerFiltres()" class="filter-input">
+
+            <input type="date" [(ngModel)]="filters().dateFin" (change)="appliquerFiltres()" class="filter-input">
+
+            <button class="btn-reset" (click)="reinitialiserFiltres()">
+                🔄 Réinitialiser
+            </button>
+        </div>
     </div>
 
     <!-- État de chargement -->
@@ -72,52 +77,59 @@
     <!-- Tableau des colis -->
     @if (!loading() && !errorMessage()) {
     <div class="table-container">
-        <div class="table-header">
-            <h2>Résultats ({{ colisFiltres().length }} colis)</h2>
-        </div>
-
-        @if (colisFiltres().length === 0) {
+        @if (colis().length === 0) {
         <div class="empty-state">
             <p>Aucun colis trouvé</p>
         </div>
         } @else {
-        <table class="colis-table">
+        <table class="data-table">
             <thead>
                 <tr>
                     <th>N° Colis</th>
-                    <th>Description</th>
+                    <th>Destinataire</th>
                     <th>Ville</th>
-                    <th>Poids</th>
-                    <th>Priorité</th>
                     <th>Statut</th>
+                    <th>Priorité</th>
                     <th>Livreur</th>
+                    <th>Zone</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @for (colis of colisPagines; track colis.id) {
+                @for (c of colis(); track c.id) {
                 <tr>
-                    <td class="numero-cell">{{ colis.id.substring(0, 8) }}</td>
-                    <td>{{ colis.description }}</td>
-                    <td>{{ colis.villeDestination }}</td>
-                    <td>{{ colis.poids }} kg</td>
+                    <td class="colis-numero">{{ c.numeroColis || c.id }}</td>
+                    <td>{{ c.destinataireNom || '-' }}</td>
+                    <td>{{ c.villeDestination || '-' }}</td>
                     <td>
-                        <span class="priorite-badge" [ngClass]="getPrioriteClass(colis.priorite)">
-                            {{ colis.priorite }}
+                        <span class="badge" [ngClass]="getStatutBadgeClass(c.statut)">
+                            {{ c.statut }}
                         </span>
                     </td>
                     <td>
-                        <span class="statut-badge" [ngClass]="getStatutClass(colis.statut)">
-                            {{ getStatutLabel(colis.statut) }}
+                        <span class="badge" [ngClass]="getPrioriteBadgeClass(c.priorite)">
+                            {{ c.priorite }}
                         </span>
                     </td>
-                    <td>{{ colis.livreurId ? ('ID: ' + colis.livreurId.substring(0, 8)) : '-' }}</td>
+                    <td>{{ c.livreurNom || 'Non assigné' }}</td>
+                    <td>{{ c.zoneNom || '-' }}</td>
                     <td class="actions-cell">
-                        <button class="btn-action btn-details" [routerLink]="['/gestionnaire/colis', colis.id]"
+                        <button class="btn-action btn-assign" (click)="ouvrirModalAssignation(c)"
+                            title="Assigner livreur">
+                            👤
+                        </button>
+                        <button class="btn-action btn-status" (click)="ouvrirModalStatut(c)" title="Modifier statut">
+                            📝
+                        </button>
+                        <button class="btn-action btn-history" (click)="ouvrirModalHistorique(c)"
+                            title="Voir historique">
+                            📜
+                        </button>
+                        <a [routerLink]="['/gestionnaire/colis', c.id]" class="btn-action btn-view"
                             title="Voir détails">
                             👁️
-                        </button>
-                        <button class="btn-action btn-delete" (click)="supprimerColis(colis.id)" title="Supprimer">
+                        </a>
+                        <button class="btn-action btn-delete" (click)="supprimerColis(c.id)" title="Supprimer">
                             🗑️
                         </button>
                     </td>
@@ -128,13 +140,20 @@
 
         <!-- Pagination -->
         <div class="pagination">
-            <button class="btn-page" (click)="changerPage(page() - 1)" [disabled]="page() === 0">
+            <button class="btn-page" [disabled]="currentPage() === 0" (click)="changerPage(currentPage() - 1)">
                 ← Précédent
             </button>
-            <span class="page-info">
-                Page {{ page() + 1 }} / {{ totalPages() }}
-            </span>
-            <button class="btn-page" (click)="changerPage(page() + 1)" [disabled]="page() >= totalPages() - 1">
+
+            <div class="page-numbers">
+                @for (page of pages; track page) {
+                <button class="btn-page-num" [class.active]="page === currentPage()" (click)="changerPage(page)">
+                    {{ page + 1 }}
+                </button>
+                }
+            </div>
+
+            <button class="btn-page" [disabled]="currentPage() === totalPages() - 1"
+                (click)="changerPage(currentPage() + 1)">
                 Suivant →
             </button>
         </div>
@@ -142,3 +161,115 @@
     </div>
     }
 </div>
+
+<!-- Modal Assignation Livreur -->
+@if (showAssignModal()) {
+<div class="modal-overlay" (click)="fermerModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>👤 Assigner un livreur</h2>
+            <button class="btn-close" (click)="fermerModals()">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <p>Colis : <strong>{{ currentColis()?.numeroColis || currentColis()?.id }}</strong></p>
+
+            <div class="form-group">
+                <label for="livreur">Sélectionner un livreur *</label>
+                <select id="livreur" [(ngModel)]="selectedLivreur" class="form-select">
+                    <option value="">-- Choisir un livreur --</option>
+                    @for (livreur of livreurs(); track livreur.id) {
+                    <option [value]="livreur.id">
+                        {{ livreur.nom }} {{ livreur.prenom }} - {{ livreur.telephone }}
+                    </option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" (click)="fermerModals()">Annuler</button>
+            <button class="btn-submit" (click)="assignerLivreur()">Assigner</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal Modification Statut -->
+@if (showStatutModal()) {
+<div class="modal-overlay" (click)="fermerModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>📝 Modifier le statut</h2>
+            <button class="btn-close" (click)="fermerModals()">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <p>Colis : <strong>{{ currentColis()?.numeroColis || currentColis()?.id }}</strong></p>
+
+            <div class="form-group">
+                <label for="statut">Nouveau statut *</label>
+                <select id="statut" [(ngModel)]="selectedStatut" class="form-select">
+                    @for (statut of statutOptions; track statut) {
+                    <option [value]="statut">{{ statut }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="commentaire">Commentaire</label>
+                <textarea id="commentaire" [(ngModel)]="commentaire" rows="3" placeholder="Ajouter un commentaire..."
+                    class="form-textarea"></textarea>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" (click)="fermerModals()">Annuler</button>
+            <button class="btn-submit" (click)="modifierStatut()">Modifier</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal Historique -->
+@if (showHistoriqueModal()) {
+<div class="modal-overlay" (click)="fermerModals()">
+    <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>📜 Historique du colis</h2>
+            <button class="btn-close" (click)="fermerModals()">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <p>Colis : <strong>{{ currentColis()?.numeroColis || currentColis()?.id }}</strong></p>
+
+            @if (historique().length === 0) {
+            <p class="no-history">Aucun historique disponible</p>
+            } @else {
+            <div class="timeline">
+                @for (h of historique(); track h.id) {
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <span class="timeline-statut badge" [ngClass]="getStatutBadgeClass(h.statut)">
+                                {{ h.statutLibelle || h.statut }}
+                            </span>
+                            <span class="timeline-date">{{ h.dateChangement | date:'dd/MM/yyyy HH:mm' }}</span>
+                        </div>
+                        @if (h.commentaire) {
+                        <p class="timeline-comment">{{ h.commentaire }}</p>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" (click)="fermerModals()">Fermer</button>
+        </div>
+    </div>
+</div>
+}

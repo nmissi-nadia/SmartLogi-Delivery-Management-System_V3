@@ -121,8 +121,8 @@ export class UsersManagementComponent implements OnInit {
     }
 
     /**
-     * Crée un nouvel utilisateur
-     */
+   * Crée un nouvel utilisateur
+   */
     private creerUtilisateur(): void {
         const data = this.formData();
 
@@ -135,11 +135,16 @@ export class UsersManagementComponent implements OnInit {
             enabled: data.enabled
         };
 
-        console.log('Payload envoyé:', payload);
-
-        // TODO: Implémenter createUser dans UserService
-        alert('Fonctionnalité de création à implémenter côté backend');
-        this.fermerModal();
+        this.userService.createUser(payload).subscribe({
+            next: () => {
+                this.chargerUtilisateurs();
+                this.fermerModal();
+            },
+            error: (error) => {
+                console.error('Erreur création utilisateur:', error);
+                alert('Erreur lors de la création de l\'utilisateur');
+            }
+        });
     }
 
     /**
@@ -163,11 +168,16 @@ export class UsersManagementComponent implements OnInit {
             payload.password = data.password;
         }
 
-        console.log('Payload envoyé:', payload);
-
-        // TODO: Implémenter updateUser dans UserService
-        alert('Fonctionnalité de modification à implémenter côté backend');
-        this.fermerModal();
+        this.userService.updateUser(user.id, payload).subscribe({
+            next: () => {
+                this.chargerUtilisateurs();
+                this.fermerModal();
+            },
+            error: (error) => {
+                console.error('Erreur modification utilisateur:', error);
+                alert('Erreur lors de la modification de l\'utilisateur');
+            }
+        });
     }
 
     /**
@@ -175,8 +185,15 @@ export class UsersManagementComponent implements OnInit {
      */
     supprimerUtilisateur(userId: string): void {
         if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-            // TODO: Implémenter deleteUser dans UserService
-            alert('Fonctionnalité de suppression à implémenter côté backend');
+            this.userService.deleteUser(userId).subscribe({
+                next: () => {
+                    this.chargerUtilisateurs();
+                },
+                error: (error) => {
+                    console.error('Erreur suppression utilisateur:', error);
+                    alert('Erreur lors de la suppression de l\'utilisateur');
+                }
+            });
         }
     }
 
@@ -184,8 +201,16 @@ export class UsersManagementComponent implements OnInit {
      * Toggle l'état enabled d'un utilisateur
      */
     toggleEnabled(user: User): void {
-        user.enabled = !user.enabled;
-        // TODO: Implémenter la mise à jour côté backend
-        console.log(`Utilisateur ${user.username} ${user.enabled ? 'activé' : 'désactivé'}`);
+        const newStatus = !user.enabled;
+
+        this.userService.updateUser(user.id, { enabled: newStatus }).subscribe({
+            next: () => {
+                user.enabled = newStatus;
+            },
+            error: (error) => {
+                console.error('Erreur toggle enabled:', error);
+                alert('Erreur lors de la modification du statut');
+            }
+        });
     }
 }

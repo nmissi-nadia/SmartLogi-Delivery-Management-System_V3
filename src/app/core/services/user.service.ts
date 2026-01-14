@@ -35,4 +35,25 @@ export class UserService {
     getUserById(id: string): Observable<User> {
         return this.http.get<User>(`${this.API_URL}/${id}`);
     }
+
+    /**
+     * Crée un nouvel utilisateur
+     */
+    createUser(user: Partial<User>): Observable<User> {
+        return this.http.post<User>(this.API_URL, user);
+    }
+
+    /**
+     * Met à jour un utilisateur existant
+     */
+    updateUser(id: string, user: Partial<User>): Observable<User> {
+        return this.http.put<User>(`${this.API_URL}/${id}`, user);
+    }
+
+    /**
+     * Supprime un utilisateur
+     */
+    deleteUser(id: string): Observable<void> {
+        return this.http.delete<void>(`${this.API_URL}/${id}`);
+    }
 }

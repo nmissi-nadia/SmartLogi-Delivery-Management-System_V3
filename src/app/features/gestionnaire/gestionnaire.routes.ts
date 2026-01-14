@@ -15,7 +15,7 @@ export const GESTIONNAIRE_ROUTES: Routes = [
     },
     {
         path: 'colis/:id',
-        loadComponent: () => import('../client/colis-details/colis-details.component').then(m => m.ColisDetailsComponent)
+        loadComponent: () => import('./colis-details-gestionnaire/colis-details-gestionnaire.component').then(m => m.ColisDetailsGestionnaireComponent)
     },
     {
         path: 'clients-management',

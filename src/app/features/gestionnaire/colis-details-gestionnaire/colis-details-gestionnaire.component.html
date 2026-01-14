@@ -1,0 +1,343 @@
+<app-navbar></app-navbar>
+
+<div class="page-container">
+    <!-- Chargement -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des détails...</p>
+    </div>
+    }
+
+    <!-- Erreur -->
+    @if (errorMessage()) {
+    <div class="error-message">
+        <p>{{ errorMessage() }}</p>
+        <button class="btn-back" [routerLink]="['/gestionnaire/colis-list']">← Retour à la liste</button>
+    </div>
+    }
+
+    <!-- Détails du colis -->
+    @if (!loading() && !errorMessage() && colis()) {
+    <div class="details-container">
+        <!-- En-tête -->
+        <div class="details-header">
+            <div>
+                <h1>📦 Détails du Colis</h1>
+                <p class="colis-numero">N° {{ colis()?.numeroColis || colis()?.id }}</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-back" [routerLink]="['/gestionnaire/colis-list']">← Retour</button>
+            </div>
+        </div>
+
+        <!-- Badges de statut et priorité -->
+        <div class="badges-row">
+            <span class="badge large" [ngClass]="getStatutBadgeClass(colis()?.statut)">
+                {{ colis()?.statut }}
+            </span>
+            <span class="badge large" [ngClass]="getPrioriteBadgeClass(colis()?.priorite)">
+                Priorité: {{ colis()?.priorite }}
+            </span>
+        </div>
+
+        <!-- Actions principales -->
+        <div class="main-actions">
+            <button class="btn-action-main btn-assign" (click)="ouvrirModalAssignation()">
+                👤 Assigner un livreur
+            </button>
+            <button class="btn-action-main btn-status" (click)="ouvrirModalStatut()">
+                📝 Modifier le statut
+            </button>
+            @if (!isEditMode()) {
+            <button class="btn-action-main btn-edit" (click)="activerModeEdition()">
+                ✏️ Modifier les informations
+            </button>
+            } @else {
+            <button class="btn-action-main btn-save" (click)="sauvegarderModifications()">
+                💾 Sauvegarder
+            </button>
+            <button class="btn-action-main btn-cancel" (click)="annulerEdition()">
+                ❌ Annuler
+            </button>
+            }
+        </div>
+
+        <!-- Grille d'informations -->
+        <div class="info-grid">
+            <!-- Informations du colis -->
+            <div class="info-card">
+                <h2>📦 Informations du Colis</h2>
+                <div class="info-content">
+                    @if (!isEditMode()) {
+                    <div class="info-row">
+                        <span class="info-label">Description:</span>
+                        <span class="info-value">{{ colis()?.description || '-' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Poids:</span>
+                        <span class="info-value">{{ colis()?.poids || '-' }} kg</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Priorité:</span>
+                        <span class="info-value">{{ colis()?.priorite || '-' }}</span>
+                    </div>
+                    } @else {
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea [(ngModel)]="editForm().description" rows="3" class="form-input"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Priorité:</label>
+                        <select [(ngModel)]="editForm().priorite" class="form-input">
+                            @for (p of prioriteOptions; track p) {
+                            <option [value]="p">{{ p }}</option>
+                            }
+                        </select>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Informations du destinataire -->
+            <div class="info-card">
+                <h2>👤 Destinataire</h2>
+                <div class="info-content">
+                    @if (!isEditMode()) {
+                    <div class="info-row">
+                        <span class="info-label">Nom:</span>
+                        <span class="info-value">{{ colis()?.destinataireNom || '-' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Prénom:</span>
+                        <span class="info-value">{{ colis()?.destinatairePrenom || '-' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Téléphone:</span>
+                        <span class="info-value">{{ colis()?.destinataireTelephone || '-' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Adresse:</span>
+                        <span class="info-value">{{ colis()?.destinataireAdresse || '-' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Ville:</span>
+                        <span class="info-value">{{ colis()?.ville || '-' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Code Postal:</span>
+                        <span class="info-value">{{ colis()?.codePostal || '-' }}</span>
+                    </div>
+                    } @else {
+                    <div class="form-group">
+                        <label>Nom:</label>
+                        <input type="text" [(ngModel)]="editForm().destinataireNom" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Prénom:</label>
+                        <input type="text" [(ngModel)]="editForm().destinatairePrenom" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Téléphone:</label>
+                        <input type="text" [(ngModel)]="editForm().destinataireTelephone" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Adresse:</label>
+                        <input type="text" [(ngModel)]="editForm().destinataireAdresse" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Ville:</label>
+                        <input type="text" [(ngModel)]="editForm().ville" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Code Postal:</label>
+                        <input type="text" [(ngModel)]="editForm().codePostal" class="form-input">
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Informations de livraison -->
+            <div class="info-card">
+                <h2>🚛 Livraison</h2>
+                <div class="info-content">
+                    <div class="info-row">
+                        <span class="info-label">Livreur:</span>
+                        <span class="info-value">{{ colis()?.livreurNom || 'Non assigné' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Zone:</span>
+                        <span class="info-value">{{ colis()?.zoneNom || zoneDetails()?.nom || '-' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Client expéditeur:</span>
+                        <span class="info-value">{{ colis()?.clientNom || '-' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Date création:</span>
+                        <span class="info-value">{{ colis()?.dateCreation | date:'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Date livraison prévue:</span>
+                        <span class="info-value">{{ (colis()?.dateLivraisonPrevue | date:'dd/MM/yyyy') || '-' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Détails de la zone et livreurs disponibles -->
+        @if (zoneDetails()) {
+        <div class="zone-section">
+            <h2>🗺️ Détails de la Zone : {{ zoneDetails()?.nom }}</h2>
+            <div class="zone-content">
+                <div class="zone-info">
+                    <div class="info-row">
+                        <span class="info-label">Nom:</span>
+                        <span class="info-value">{{ zoneDetails()?.nom }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Description:</span>
+                        <span class="info-value">{{ zoneDetails()?.description || '-' }}</span>
+                    </div>
+                </div>
+
+                <div class="livreurs-zone">
+                    <h3>👥 Livreurs disponibles dans cette zone ({{ livreurs().length }})</h3>
+                    @if (livreurs().length === 0) {
+                    <p class="no-livreurs">Aucun livreur disponible dans cette zone</p>
+                    } @else {
+                    <div class="livreurs-grid">
+                        @for (livreur of livreurs(); track livreur.id) {
+                        <div class="livreur-card" [class.assigned]="colis()?.livreurId === livreur.id">
+                            <div class="livreur-header">
+                                <span class="livreur-icon">👤</span>
+                                <span class="livreur-name">{{ livreur.nom }} {{ livreur.prenom }}</span>
+                                @if (colis()?.livreurId === livreur.id) {
+                                <span class="badge badge-success">Assigné</span>
+                                }
+                            </div>
+                            <div class="livreur-info">
+                                <p>📞 {{ livreur.telephone }}</p>
+                                <p>🚗 {{ livreur.vehicule || '-' }}</p>
+                            </div>
+                            @if (colis()?.livreurId !== livreur.id) {
+                            <button class="btn-assign-quick" (click)="assignerLivreurDirect(livreur.id)">
+                                Assigner ce livreur
+                            </button>
+                            }
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- Historique -->
+        <div class="historique-section">
+            <h2>📜 Historique du Colis</h2>
+            @if (historique().length === 0) {
+            <p class="no-history">Aucun historique disponible</p>
+            } @else {
+            <div class="timeline">
+                @for (h of historique(); track h.id) {
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <span class="timeline-statut badge" [ngClass]="getStatutBadgeClass(h.statut)">
+                                {{ h.statutLibelle || h.statut }}
+                            </span>
+                            <span class="timeline-date">{{ h.dateChangement | date:'dd/MM/yyyy HH:mm' }}</span>
+                        </div>
+                        @if (h.commentaire) {
+                        <p class="timeline-comment">{{ h.commentaire }}</p>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+    }
+</div>
+
+<!-- Modal Assignation Livreur -->
+@if (showAssignModal()) {
+<div class="modal-overlay" (click)="fermerModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>👤 Assigner un livreur</h2>
+            <button class="btn-close" (click)="fermerModals()">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <p class="modal-info">
+                <strong>Zone du colis:</strong> {{ colis()?.zoneNom || 'Aucune zone' }}
+            </p>
+            <p class="modal-info">
+                Les livreurs affichés sont filtrés par la zone du colis.
+            </p>
+
+            <div class="form-group">
+                <label for="livreur">Sélectionner un livreur *</label>
+                <select id="livreur" [(ngModel)]="selectedLivreur" class="form-select">
+                    <option value="">-- Choisir un livreur --</option>
+                    @for (livreur of livreurs(); track livreur.id) {
+                    <option [value]="livreur.id">
+                        {{ livreur.nom }} {{ livreur.prenom }} - {{ livreur.telephone }}
+                    </option>
+                    }
+                </select>
+            </div>
+
+            @if (livreurs().length === 0) {
+            <p class="warning-message">⚠️ Aucun livreur disponible pour cette zone</p>
+            }
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" (click)="fermerModals()">Annuler</button>
+            <button class="btn-submit" (click)="assignerLivreur()" [disabled]="livreurs().length === 0">
+                Assigner
+            </button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal Modification Statut -->
+@if (showStatutModal()) {
+<div class="modal-overlay" (click)="fermerModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>📝 Modifier le statut</h2>
+            <button class="btn-close" (click)="fermerModals()">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="statut">Nouveau statut *</label>
+                <select id="statut" [(ngModel)]="selectedStatut" class="form-select">
+                    @for (statut of statutOptions; track statut) {
+                    <option [value]="statut">{{ statut }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="commentaire">Commentaire</label>
+                <textarea id="commentaire" [(ngModel)]="commentaire" rows="3" placeholder="Ajouter un commentaire..."
+                    class="form-textarea"></textarea>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" (click)="fermerModals()">Annuler</button>
+            <button class="btn-submit" (click)="modifierStatut()">Modifier</button>
+        </div>
+    </div>
+</div>
+}
