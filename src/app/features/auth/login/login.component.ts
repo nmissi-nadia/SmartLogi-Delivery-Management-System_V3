@@ -124,7 +124,7 @@ export class LoginComponent {
      */
     loginWithGoogle(): void {
         // Rediriger vers l'endpoint OAuth2 Google du backend
-        window.location.href = `${this.authService['API_URL']}/oauth2/authorize/google`;
+        window.location.href = `${this.authService['API_URL']}/oauth2/authorization/google`;
     }
 
     /**
@@ -132,6 +132,6 @@ export class LoginComponent {
      */
     loginWithOkta(): void {
         // Rediriger vers l'endpoint OAuth2 Okta du backend
-        window.location.href = `${this.authService['API_URL']}/oauth2/authorize/okta`;
+        window.location.href = `${this.authService['API_URL']}/oauth2/authorization/okta`;
     }
 }

@@ -1,0 +1,164 @@
+<app-navbar></app-navbar>
+
+<div class="mes-colis-container">
+    <!-- En-tête -->
+    <div class="page-header">
+        <h1>📦 Mes Colis Assignés</h1>
+        <p class="subtitle">Gérez vos livraisons en cours</p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <div class="stat-icon">📦</div>
+            <div class="stat-content">
+                <h3>Total</h3>
+                <p class="stat-value">{{ stats().total }}</p>
+            </div>
+        </div>
+
+        <div class="stat-card attente">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-content">
+                <h3>En Attente</h3>
+                <p class="stat-value">{{ stats().enAttente }}</p>
+            </div>
+        </div>
+
+        <div class="stat-card transit">
+            <div class="stat-icon">🚚</div>
+            <div class="stat-content">
+                <h3>En Transit</h3>
+                <p class="stat-value">{{ stats().enTransit }}</p>
+            </div>
+        </div>
+
+        <div class="stat-card livres">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+                <h3>Livrés</h3>
+                <p class="stat-value">{{ stats().livres }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters-section">
+        <div class="filter-group">
+            <label for="statut">Filtrer par statut :</label>
+            <select id="statut" [(ngModel)]="filtreStatut" (change)="appliquerFiltre()" class="filter-select">
+                <option value="">Tous les statuts</option>
+                <option value="CREE">Créé</option>
+                <option value="COLLECTE">Collecté</option>
+                <option value="EN_TRANSIT">En transit</option>
+                <option value="LIVRE">Livré</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- État de chargement -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement de vos colis...</p>
+    </div>
+    }
+
+    <!-- Message d'erreur -->
+    @if (errorMessage()) {
+    <div class="error-message">
+        <p>{{ errorMessage() }}</p>
+    </div>
+    }
+
+    <!-- Liste des colis -->
+    @if (!loading() && !errorMessage()) {
+    @if (colisFiltres().length === 0) {
+    <div class="empty-state">
+        <p>Aucun colis assigné pour le moment</p>
+    </div>
+    } @else {
+    <div class="colis-grid">
+        @for (colis of colisFiltres(); track colis.id) {
+        <div class="colis-card">
+            <div class="colis-header">
+                <span class="colis-id">{{ colis.id.substring(0, 8) }}</span>
+                <span class="statut-badge" [ngClass]="getStatutClass(colis.statut)">
+                    {{ getStatutLabel(colis.statut) }}
+                </span>
+            </div>
+
+            <div class="colis-body">
+                <div class="colis-info">
+                    <p class="info-label">Description</p>
+                    <p class="info-value">{{ colis.description }}</p>
+                </div>
+
+                <div class="colis-info">
+                    <p class="info-label">Destination</p>
+                    <p class="info-value">📍 {{ colis.villeDestination }}</p>
+                </div>
+
+                <div class="colis-info-row">
+                    <div class="colis-info">
+                        <p class="info-label">Poids</p>
+                        <p class="info-value">{{ colis.poids }} kg</p>
+                    </div>
+
+                    <div class="colis-info">
+                        <p class="info-label">Priorité</p>
+                        <span class="priorite-badge" [ngClass]="getPrioriteClass(colis.priorite)">
+                            {{ colis.priorite }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="colis-actions">
+                <button class="btn-primary" (click)="ouvrirModalStatut(colis)">
+                    Mettre à jour
+                </button>
+                <a [routerLink]="['/livreur/colis', colis.id]" class="btn-secondary">
+                    Détails
+                </a>
+            </div>
+        </div>
+        }
+    </div>
+    }
+    }
+</div>
+
+<!-- Modal de mise à jour de statut -->
+@if (showStatutModal()) {
+<div class="modal-overlay" (click)="fermerModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Mettre à jour le statut</h2>
+            <button class="close-btn" (click)="fermerModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="nouveauStatut">Nouveau statut *</label>
+                <select id="nouveauStatut" [(ngModel)]="nouveauStatut" class="form-control">
+                    <option value="COLLECTE">Collecté</option>
+                    <option value="EN_TRANSIT">En transit</option>
+                    <option value="LIVRE">Livré</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="commentaire">Commentaire (optionnel)</label>
+                <textarea id="commentaire" [(ngModel)]="commentaire" class="form-control" rows="3"
+                    placeholder="Ajoutez un commentaire..."></textarea>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" (click)="fermerModal()">Annuler</button>
+            <button class="btn-primary" (click)="mettreAJourStatut()">Confirmer</button>
+        </div>
+    </div>
+</div>
+}

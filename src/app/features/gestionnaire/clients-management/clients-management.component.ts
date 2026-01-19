@@ -44,14 +44,11 @@ export class ClientsManagementComponent implements OnInit {
 
   // Formulaire
   formData = signal({
-    username: '',
     nom: '',
     prenom: '',
     email: '',
     telephone: '',
-    adresse: '',
-    ville: '',
-    codePostal: ''
+    adresse: ''
   });
 
   ngOnInit(): void {
@@ -140,14 +137,11 @@ export class ClientsManagementComponent implements OnInit {
     this.isEditMode.set(true);
     this.currentClient.set(client);
     this.formData.set({
-      username: client.username,
       nom: client.nom,
       prenom: client.prenom,
       email: client.email,
       telephone: client.telephone || '',
-      adresse: client.adresse || '',
-      ville: client.ville || '',
-      codePostal: client.codePostal || ''
+      adresse: client.adresse || ''
     });
     this.showModal.set(true);
   }
@@ -217,14 +211,11 @@ export class ClientsManagementComponent implements OnInit {
    */
   private resetForm(): void {
     this.formData.set({
-      username: '',
       nom: '',
       prenom: '',
       email: '',
       telephone: '',
-      adresse: '',
-      ville: '',
-      codePostal: ''
+      adresse: ''
     });
   }
 }

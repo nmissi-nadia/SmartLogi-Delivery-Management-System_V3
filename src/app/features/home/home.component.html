@@ -1,0 +1,149 @@
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="logo-icon">📦</span>
+                    SmartLogi
+                </h1>
+                <p class="hero-subtitle">Gestion Intelligente de Livraison</p>
+                <p class="hero-description">
+                    Optimisez vos livraisons avec notre plateforme moderne et intuitive.
+                    Suivi en temps réel, gestion simplifiée, satisfaction garantie.
+                </p>
+
+                <div class="hero-actions">
+                    <a routerLink="/auth/login" class="btn btn-primary btn-lg">
+                        <span>Se connecter</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </a>
+
+                    <a routerLink="/suivi-rapide" class="btn btn-dark btn-lg">
+                        <span>Suivre mon colis</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <div class="floating-card card-1">
+                    <div class="card-icon">📦</div>
+                    <div class="card-text">
+                        <div class="card-title">Colis #12345</div>
+                        <div class="card-status">En transit</div>
+                    </div>
+                </div>
+
+                <div class="floating-card card-2">
+                    <div class="card-icon">✅</div>
+                    <div class="card-text">
+                        <div class="card-title">Livraison</div>
+                        <div class="card-status">Confirmée</div>
+                    </div>
+                </div>
+
+                <div class="floating-card card-3">
+                    <div class="card-icon">🚚</div>
+                    <div class="card-text">
+                        <div class="card-title">Tournée</div>
+                        <div class="card-status">En cours</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                @for (stat of stats; track stat.label) {
+                <div class="stat-item">
+                    <div class="stat-value">{{ stat.value }}</div>
+                    <div class="stat-label">{{ stat.label }}</div>
+                </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Pourquoi choisir SmartLogi ?</h2>
+                <p class="section-subtitle">
+                    Une solution complète pour tous vos besoins de livraison
+                </p>
+            </div>
+
+            <div class="features-grid">
+                @for (feature of features; track feature.title) {
+                <div class="feature-card">
+                    <div class="feature-icon">{{ feature.icon }}</div>
+                    <h3 class="feature-title">{{ feature.title }}</h3>
+                    <p class="feature-description">{{ feature.description }}</p>
+                </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Prêt à optimiser vos livraisons ?</h2>
+                <p class="cta-description">
+                    Rejoignez des centaines d'entreprises qui font confiance à SmartLogi
+                </p>
+                <div class="cta-actions">
+                    <a routerLink="/auth/login" class="btn btn-primary btn-lg">
+                        Commencer maintenant
+                    </a>
+                    <a routerLink="/suivi-rapide" class="btn btn-outline btn-lg">
+                        Suivre un colis
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>📦 SmartLogi</h3>
+                    <p>Gestion intelligente de livraison</p>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Accès rapide</h4>
+                        <a routerLink="/auth/login">Connexion</a>
+                        <a routerLink="/suivi-rapide">Suivi colis</a>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Contact</h4>
+                        <p>contact@smartlogi.com</p>
+                        <p>+33 1 23 45 67 89</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 SmartLogi. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+</div>

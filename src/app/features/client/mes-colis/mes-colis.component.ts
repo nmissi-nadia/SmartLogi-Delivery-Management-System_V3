@@ -106,22 +106,22 @@ export class MesColisComponent implements OnInit {
 
     getStatutClass(statut: string): string {
         const classes: { [key: string]: string } = {
-            'CREE': 'statut-preparation',
+            'CREE': 'statut-cree',
+            'COLLECTE': 'statut-collecte',
+            'EN_STOCK': 'statut-stock',
             'EN_TRANSIT': 'statut-transit',
-            'LIVRE': 'statut-livre',
-            'RETOURNE': 'statut-retourne',
-            'ANNULE': 'statut-annule'
+            'LIVRE': 'statut-livre'
         };
         return classes[statut] || 'statut-default';
     }
 
     getStatutLabel(statut: string): string {
         const labels: { [key: string]: string } = {
-            'CREE': 'En préparation',
+            'CREE': 'Créé',
+            'COLLECTE': 'Collecté',
+            'EN_STOCK': 'En stock',
             'EN_TRANSIT': 'En transit',
-            'LIVRE': 'Livré',
-            'RETOURNE': 'Retourné',
-            'ANNULE': 'Annulé'
+            'LIVRE': 'Livré'
         };
         return labels[statut] || statut;
     }

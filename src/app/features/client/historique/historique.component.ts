@@ -2,6 +2,7 @@ import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ColisService, type Colis } from '../../../core/services/colis.service';
 import { DestinataireService } from '../../../core/services/destinataire.service';
+import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
@@ -16,7 +17,7 @@ interface ColisEnrichi extends Colis {
 @Component({
     selector: 'app-historique',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, NavbarComponent],
     templateUrl: './historique.component.html',
     styleUrl: './historique.component.css'
 })
@@ -87,10 +88,12 @@ export class HistoriqueComponent implements OnInit {
     }
 
     getStatutLabel(statut: string): string {
-        const labels: Record<string, string> = {
-            'LIVRE': 'Livré',
-            'RETOURNE': 'Retourné',
-            'ANNULE': 'Annulé'
+        const labels: { [key: string]: string } = {
+            'CREE': 'Créé',
+            'COLLECTE': 'Collecté',
+            'EN_STOCK': 'En stock',
+            'EN_TRANSIT': 'En transit',
+            'LIVRE': 'Livré'
         };
         return labels[statut] || statut;
     }

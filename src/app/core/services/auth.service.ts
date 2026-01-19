@@ -53,33 +53,33 @@ export class AuthService {
      * @returns Observable de la réponse JWT
      */
     login(credentials: LoginCredentials): Observable<any> {
-      return this.http.post<any>(`${this.AUTH_ENDPOINT}/login`, credentials)
-        .pipe(
-          tap(response => {
-            // Stocker le token
-            this.tokenService.setToken(response.token);
+        return this.http.post<any>(`${this.AUTH_ENDPOINT}/login`, credentials)
+            .pipe(
+                tap(response => {
+                    // Stocker le token
+                    this.tokenService.setToken(response.token);
 
-            // Extraire les infos du token
-            const roles = this.tokenService.getRolesFromToken();
-            const username = this.tokenService.getUsernameFromToken();
+                    // Extraire les infos du token
+                    const roles = this.tokenService.getRolesFromToken();
+                    const username = this.tokenService.getUsernameFromToken();
 
-            // Créer un user minimal depuis le token
-            const user: User = {
-              id: 0,
-              username: username || '',
-              email: '',
-              roles: roles as Role[]
-            };
+                    // Créer un user minimal depuis le token
+                    const user: User = {
+                        id: 0,
+                        username: username || '',
+                        email: '',
+                        roles: roles as Role[]
+                    };
 
-            // Mettre à jour l'état
-            this.currentUserSubject.next(user);
-            this.isAuthenticatedSubject.next(true);
-          }),
-          catchError(error => {
-            console.error('Erreur de connexion:', error);
-            return throwError(() => error);
-          })
-        );
+                    // Mettre à jour l'état
+                    this.currentUserSubject.next(user);
+                    this.isAuthenticatedSubject.next(true);
+                }),
+                catchError(error => {
+                    console.error('Erreur de connexion:', error);
+                    return throwError(() => error);
+                })
+            );
     }
 
     /**
@@ -173,6 +173,29 @@ export class AuthService {
      */
     getUserRoles(): string[] {
         return this.tokenService.getRolesFromToken();
+    }
+
+    /**
+     * Récupère les informations de l'utilisateur depuis le token
+     * @returns Les informations de l'utilisateur ou null
+     */
+    getUserInfo(): { userId: string; username: string; roles: string[] } | null {
+        const token = this.tokenService.getToken();
+        if (!token) {
+            return null;
+        }
+
+        try {
+            const payload = this.tokenService.getTokenPayload(token);
+            return {
+                userId: payload.sub || payload.userId || '',
+                username: payload.username || payload.sub || '',
+                roles: this.tokenService.getRolesFromToken()
+            };
+        } catch (error) {
+            console.error('Erreur lors de la récupération des infos utilisateur:', error);
+            return null;
+        }
     }
 
     /**

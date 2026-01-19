@@ -3,7 +3,7 @@
 <div class="dashboard-container">
     <!-- En-tête -->
     <div class="dashboard-header">
-        <h1> Dashboard Gestionnaire</h1>
+        <h1>📊 Dashboard Gestionnaire</h1>
         <p class="subtitle">Vue d'ensemble de la logistique</p>
     </div>
 
@@ -69,6 +69,52 @@
                 <div class="kpi-content">
                     <h3>Taux de Livraison</h3>
                     <p class="kpi-value">{{ getTauxLivraison() }}%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section graphiques -->
+        <div class="charts-section">
+            <!-- Graphique de répartition par statut -->
+            <div class="chart-card">
+                <h2 class="chart-title">📊 Répartition par Statut</h2>
+                <div class="chart-content">
+                    <div class="donut-chart">
+                        <div class="donut-center">
+                            <span class="donut-total">{{ statistiques()!.totalColis }}</span>
+                            <span class="donut-label">Colis</span>
+                        </div>
+                    </div>
+                    <div class="chart-legend">
+                        @for (item of statutsData(); track item.statut) {
+                        <div class="legend-item">
+                            <div class="legend-color" [style.background-color]="item.couleur"></div>
+                            <div class="legend-info">
+                                <span class="legend-label">{{ item.statut }}</span>
+                                <span class="legend-value">{{ item.nombre }} ({{ getStatutPourcentage(item.nombre)
+                                    }}%)</span>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphique en barres horizontales -->
+            <div class="chart-card">
+                <h2 class="chart-title">📈 Performance</h2>
+                <div class="bar-chart">
+                    @for (item of statutsData(); track item.statut) {
+                    <div class="bar-item">
+                        <div class="bar-label">{{ item.statut }}</div>
+                        <div class="bar-container">
+                            <div class="bar-fill" [style.width.%]="getStatutPourcentage(item.nombre)"
+                                [style.background-color]="item.couleur">
+                            </div>
+                        </div>
+                        <div class="bar-value">{{ item.nombre }}</div>
+                    </div>
+                    }
                 </div>
             </div>
         </div>

@@ -1,0 +1,26 @@
+<div class="oauth2-callback-container">
+    <div class="callback-card">
+        @if (errorMessage) {
+        <!-- Message d'erreur -->
+        <div class="error-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="error-icon">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h2>Erreur d'authentification</h2>
+            <p>{{ errorMessage }}</p>
+            <p class="redirect-message">Redirection vers la page de connexion...</p>
+        </div>
+        } @else {
+        <!-- Animation de chargement -->
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2>Authentification en cours...</h2>
+            <p>Veuillez patienter pendant que nous vous connectons</p>
+        </div>
+        }
+    </div>
+</div>

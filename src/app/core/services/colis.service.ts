@@ -108,10 +108,12 @@ export class ColisService {
     }
 
     /**
-     * Récupère les colis d'un livreur spécifique
+     * Récupère les colis d'un livreur connecté
+     * Utilise l'authentification JWT pour identifier le livreur
      */
-    getColisByLivreur(livreurId: string): Observable<Colis[]> {
-        return this.http.get<Colis[]>(`${this.API_URL}/livreur/${livreurId}`);
+    getColisByLivreur(): Observable<any> {
+        // Le backend utilise /api/livreurs/colis avec authentification JWT
+        return this.http.get<any>(`${environment.apiUrl}/api/livreurs/colis`);
     }
 
     /**
@@ -125,7 +127,7 @@ export class ColisService {
      * Crée un nouveau colis
      */
     createColis(colis: ColisRequestDTO): Observable<Colis> {
-        return this.http.post<Colis>(`${environment.apiUrl}/api/clients/colis`, colis);
+        return this.http.post<Colis>(`${environment.apiUrl}/api/colis`, colis);
     }
 
     /**
@@ -158,9 +160,12 @@ export class ColisService {
     }
 
     /**
-     * Met à jour le statut d'un colis
+     * Met à jour le statut d'un colis (pour livreur)
      */
     updateStatut(colisId: string, statut: string): Observable<Colis> {
-        return this.http.put<Colis>(`${this.API_URL}/${colisId}/statut`, { statut });
+        return this.http.put<Colis>(
+            `${environment.apiUrl}/api/livreurs/colis/${colisId}/statut?nouveauStatut=${statut}`,
+            {}
+        );
     }
 }

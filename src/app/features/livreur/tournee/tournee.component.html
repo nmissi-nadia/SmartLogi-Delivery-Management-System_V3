@@ -1,0 +1,198 @@
+<app-navbar></app-navbar>
+
+<div class="tournee-container">
+    <!-- En-tête -->
+    <div class="page-header">
+        <div class="header-content">
+            <h1>🗺️ Ma Tournée du Jour</h1>
+            <p class="subtitle">Planifiez et suivez vos livraisons</p>
+        </div>
+        @if (!loading() && colisJour().length > 0) {
+        <button class="btn-start-tournee" (click)="demarrerTournee()">
+            🚀 Démarrer la tournée
+        </button>
+        }
+    </div>
+
+    <!-- Barre de progression -->
+    @if (!loading() && colisJour().length > 0) {
+    <div class="progress-section">
+        <div class="progress-header">
+            <span>Progression de la tournée</span>
+            <span class="progress-percentage">{{ getProgression() }}%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgression()"></div>
+        </div>
+        <div class="progress-info">
+            <span>{{ stats().livres }} / {{ stats().total }} colis livrés</span>
+        </div>
+    </div>
+    }
+
+    <!-- Statistiques de la tournée -->
+    @if (!loading() && colisJour().length > 0) {
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-content">
+                <h3>Total Colis</h3>
+                <p class="stat-value">{{ stats().total }}</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+                <h3>Livrés</h3>
+                <p class="stat-value">{{ stats().livres }}</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🚚</div>
+            <div class="stat-content">
+                <h3>En cours</h3>
+                <p class="stat-value">{{ stats().enCours }}</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📍</div>
+            <div class="stat-content">
+                <h3>Distance estimée</h3>
+                <p class="stat-value">{{ stats().distanceEstimee }} km</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-content">
+                <h3>Temps estimé</h3>
+                <p class="stat-value">{{ stats().tempsEstime }} min</p>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- État de chargement -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement de votre tournée...</p>
+    </div>
+    }
+
+    <!-- Message d'erreur -->
+    @if (errorMessage()) {
+    <div class="error-message">
+        <p>{{ errorMessage() }}</p>
+    </div>
+    }
+
+    <!-- État vide -->
+    @if (!loading() && !errorMessage() && colisJour().length === 0) {
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h2>Aucune livraison prévue</h2>
+        <p>Vous n'avez pas de colis à livrer aujourd'hui</p>
+    </div>
+    }
+
+    <!-- Colis groupés par zone -->
+    @if (!loading() && !errorMessage() && colisJour().length > 0) {
+    <div class="zones-section">
+        <h2 class="section-title">📍 Livraisons par Zone</h2>
+
+        @for (zone of getZones(); track zone) {
+        <div class="zone-card">
+            <div class="zone-header">
+                <h3>{{ zone }}</h3>
+                <span class="zone-count">{{ colisGroupesParZone()[zone].length }} colis</span>
+            </div>
+
+            <div class="zone-colis-list">
+                @for (colis of colisGroupesParZone()[zone]; track colis.id) {
+                <div class="tournee-colis-item">
+                    <div class="colis-main-info">
+                        <div class="colis-number">
+                            <span class="numero-badge">{{ colis.id.substring(0, 8) }}</span>
+                        </div>
+
+                        <div class="colis-details">
+                            <p class="colis-description">{{ colis.description }}</p>
+                            <p class="colis-meta">
+                                <span class="meta-item">⚖️ {{ colis.poids }} kg</span>
+                                <span class="meta-item">📦 {{ colis.priorite }}</span>
+                            </p>
+                        </div>
+
+                        <div class="colis-status">
+                            <span class="statut-badge" [ngClass]="getStatutClass(colis.statut)">
+                                {{ getStatutLabel(colis.statut) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="colis-actions">
+                        @if (colis.statut !== 'LIVRE') {
+                        <button class="btn-livrer" (click)="ouvrirModalLivraison(colis)">
+                            ✓ Marquer comme livré
+                        </button>
+                        }
+                        <a [routerLink]="['/livreur/colis', colis.id]" class="btn-details">
+                            Détails
+                        </a>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>
+
+<!-- Modal de confirmation de livraison -->
+@if (showLivraisonModal()) {
+<div class="modal-overlay" (click)="fermerModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Confirmer la livraison</h2>
+            <button class="close-btn" (click)="fermerModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="colis-recap">
+                <p><strong>Colis:</strong> {{ colisSelectionne()?.id?.substring(0, 8) ?? 'N/A' }}</p>
+                <p><strong>Description:</strong> {{ colisSelectionne()?.description ?? 'N/A' }}</p>
+            </div>
+
+            <div class="form-group">
+                <label class="radio-label">
+                    <input type="radio" name="livraison" [checked]="livraisonReussie()"
+                        (change)="livraisonReussie.set(true)">
+                    <span>✅ Livraison réussie</span>
+                </label>
+
+                <label class="radio-label">
+                    <input type="radio" name="livraison" [checked]="!livraisonReussie()"
+                        (change)="livraisonReussie.set(false)">
+                    <span>❌ Échec de livraison</span>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="commentaire">Commentaire</label>
+                <textarea id="commentaire" [(ngModel)]="commentaireLivraison" class="form-control" rows="3"
+                    placeholder="Ajoutez un commentaire (optionnel)..."></textarea>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" (click)="fermerModal()">Annuler</button>
+            <button class="btn-primary" (click)="confirmerLivraison()">Confirmer</button>
+        </div>
+    </div>
+</div>
+}

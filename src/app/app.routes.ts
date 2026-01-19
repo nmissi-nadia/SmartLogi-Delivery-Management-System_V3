@@ -34,6 +34,12 @@ export const routes: Routes = [
         data: { roles: [Role.CLIENT] }
     },
 
+    // Route publique - Suivi rapide destinataire (SANS authentification)
+    {
+        path: 'suivi-rapide',
+        loadComponent: () => import('./features/destinataire/suivi-rapide/suivi-rapide.component').then(m => m.SuiviRapideComponent)
+    },
+
     // Routes protégées - Destinataire
     {
         path: 'destinataire',
@@ -48,16 +54,22 @@ export const routes: Routes = [
         loadComponent: () => import('./shared/components/access-denied/access-denied.component').then(m => m.AccessDeniedComponent)
     },
 
-    // Redirection par défaut
+    // Page d'accueil
+    {
+        path: 'home',
+        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+    },
+
+    // Redirection par défaut vers la page d'accueil
     {
         path: '',
-        redirectTo: '/auth/login',
+        redirectTo: '/home',
         pathMatch: 'full'
     },
 
     // Route 404 - Page non trouvée
     {
         path: '**',
-        redirectTo: '/auth/login'
+        redirectTo: '/home'
     }
 ];

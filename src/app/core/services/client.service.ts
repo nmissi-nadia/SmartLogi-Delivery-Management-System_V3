@@ -2,10 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import type { ClientExpediteur, ClientPage, CreateClientDTO } from '../models/client.model';
+import type { ClientExpediteur, CreateClientDTO, ClientPage } from '../models/client.model';
 
 /**
- * Service pour la gestion des clients expéditeurs
+ * Service pour gérer les clients expéditeurs
  */
 @Injectable({
     providedIn: 'root'
@@ -15,7 +15,7 @@ export class ClientService {
     private readonly API_URL = `${environment.apiUrl}/api/clients`;
 
     /**
-     * Récupère tous les clients
+     * Récupère la liste de tous les clients
      */
     getAllClients(): Observable<ClientExpediteur[]> {
         return this.http.get<ClientExpediteur[]>(this.API_URL);
@@ -29,6 +29,18 @@ export class ClientService {
     }
 
     /**
+     * Recherche des clients par mot-clé avec pagination
+     */
+    searchClients(keyword: string, page: number, size: number): Observable<ClientPage> {
+        const params = new HttpParams()
+            .set('keyword', keyword)
+            .set('page', page.toString())
+            .set('size', size.toString());
+
+        return this.http.get<ClientPage>(`${this.API_URL}/search`, { params });
+    }
+
+    /**
      * Crée un nouveau client
      */
     createClient(client: CreateClientDTO): Observable<ClientExpediteur> {
@@ -38,7 +50,7 @@ export class ClientService {
     /**
      * Met à jour un client existant
      */
-    updateClient(id: string, client: Partial<ClientExpediteur>): Observable<ClientExpediteur> {
+    updateClient(id: string, client: Partial<CreateClientDTO>): Observable<ClientExpediteur> {
         return this.http.put<ClientExpediteur>(`${this.API_URL}/${id}`, client);
     }
 
@@ -50,14 +62,17 @@ export class ClientService {
     }
 
     /**
-     * Recherche des clients par mot-clé avec pagination
+     * Récupère les statistiques d'un client
      */
-    searchClients(keyword: string, page: number = 0, size: number = 20): Observable<ClientPage> {
-        let params = new HttpParams()
-            .set('keyword', keyword)
-            .set('page', page.toString())
-            .set('size', size.toString());
-
-        return this.http.get<ClientPage>(`${this.API_URL}/search`, { params });
+    getClientStats(id: string): Observable<{
+        nombreColis: number;
+        colisEnCours: number;
+        colisLivres: number;
+    }> {
+        return this.http.get<{
+            nombreColis: number;
+            colisEnCours: number;
+            colisLivres: number;
+        }>(`${this.API_URL}/${id}/stats`);
     }
 }

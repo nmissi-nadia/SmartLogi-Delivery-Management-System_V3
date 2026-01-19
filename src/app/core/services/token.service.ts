@@ -100,4 +100,13 @@ export class TokenService {
         const decoded = this.decodeToken(token);
         return decoded?.sub || decoded?.username || null;
     }
+
+    /**
+     * Récupère le payload complet du token
+     * @param token - Le token JWT
+     * @returns Le payload décodé
+     */
+    getTokenPayload(token: string): any {
+        return this.decodeToken(token);
+    }
 }

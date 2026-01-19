@@ -6,12 +6,16 @@ import { Routes } from '@angular/router';
  */
 export const DESTINATAIRE_ROUTES: Routes = [
     {
+        path: 'suivi-rapide',
+        loadComponent: () => import('./suivi-rapide/suivi-rapide.component').then(m => m.SuiviRapideComponent)
+    },
+    {
         path: 'suivi-colis',
         loadComponent: () => import('./suivi-colis/suivi-colis.component').then(m => m.SuiviColisComponent)
     },
     {
         path: '',
-        redirectTo: 'suivi-colis',
+        redirectTo: 'suivi-rapide',
         pathMatch: 'full'
     }
 ];

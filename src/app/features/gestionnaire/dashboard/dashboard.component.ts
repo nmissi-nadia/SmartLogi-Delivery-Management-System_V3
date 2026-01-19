@@ -25,6 +25,9 @@ export class DashboardComponent implements OnInit {
   loading = signal(true);
   errorMessage = signal<string | null>(null);
 
+  // Données pour les graphiques
+  statutsData = signal<{ statut: string; nombre: number; couleur: string }[]>([]);
+
   ngOnInit(): void {
     this.chargerDonnees();
   }
@@ -37,6 +40,7 @@ export class DashboardComponent implements OnInit {
     this.statistiquesService.getStatistiquesOverview().subscribe({
       next: (stats) => {
         this.statistiques.set(stats);
+        this.prepareStatutsData(stats);
         this.loading.set(false);
       },
       error: (error) => {
@@ -56,6 +60,27 @@ export class DashboardComponent implements OnInit {
         console.error('Erreur chargement colis récents:', error);
       }
     });
+  }
+
+  /**
+   * Prépare les données pour le graphique de statuts
+   */
+  private prepareStatutsData(stats: StatistiquesOverview): void {
+    const data = [
+      { statut: 'En Attente', nombre: stats.colisEnAttente, couleur: '#f59e0b' },
+      { statut: 'En Cours', nombre: stats.colisEnCours, couleur: '#8b5cf6' },
+      { statut: 'Livrés', nombre: stats.colisLivres, couleur: '#10b981' }
+    ];
+    this.statutsData.set(data);
+  }
+
+  /**
+   * Calcule le pourcentage pour un statut
+   */
+  getStatutPourcentage(nombre: number): number {
+    const stats = this.statistiques();
+    if (!stats || stats.totalColis === 0) return 0;
+    return Math.round((nombre / stats.totalColis) * 100);
   }
 
   /**

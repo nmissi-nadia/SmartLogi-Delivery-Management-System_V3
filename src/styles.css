@@ -1,81 +1,56 @@
-/* Reset CSS et styles globaux */
-* {
+/* Import du design system */
+@import './styles/variables.css';
+
+/* Application globale du design system */
+body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
-body {
-    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--background-dark);
-    color: var(--text-primary);
-    line-height: 1.6;
-}
-
-/* Classe pour les pages avec sidebar */
+/* Sidebar avec thème */
 .with-sidebar {
     padding-left: 260px;
-    transition: padding-left 0.3s ease;
+    transition: padding-left var(--transition-base);
+    background-color: var(--white-primary);
 }
 
-/* Ajuster le padding quand la sidebar est collapsed */
 .with-sidebar.sidebar-collapsed {
     padding-left: 80px;
 }
 
-/* Styles pour les liens */
+/* Liens */
 a {
-    color: var(--primary-color);
+    color: var(--yellow-dark);
     text-decoration: none;
+    transition: color var(--transition-fast);
+    font-weight: 500;
 }
 
 a:hover {
-    text-decoration: underline;
+    color: var(--black-primary);
 }
 
-/* Utilitaires */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
 }
 
-.card {
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
+::-webkit-scrollbar-track {
+    background: var(--gray-light);
 }
 
-.btn-primary {
-    background: var(--primary-yellow);
-    color: var(--text-dark);
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+::-webkit-scrollbar-thumb {
+    background: var(--gray-dark);
+    border-radius: var(--radius-full);
 }
 
-.btn-primary:hover {
-    background: var(--primary-yellow-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+::-webkit-scrollbar-thumb:hover {
+    background: var(--yellow-primary);
 }
 
-.btn-secondary {
-    background: var(--dark-bg);
-    color: var(--white);
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-secondary:hover {
-    background: var(--dark-secondary);
-    transform: translateY(-2px);
+/* Focus visible pour accessibilité */
+*:focus-visible {
+    outline: 3px solid var(--yellow-primary);
+    outline-offset: 2px;
 }

@@ -1,0 +1,121 @@
+<div class="suivi-container">
+    <div class="suivi-header">
+        <h1>📦 Suivi de Livraison</h1>
+        <p class="subtitle">Suivez vos colis et confirmez leur réception</p>
+        <a routerLink="/auth/login" class="back-link">← Retour à la connexion</a>
+    </div>
+
+    <!-- Formulaire de recherche -->
+    @if (!showResults()) {
+    <div class="search-card">
+        <h2>Identifiez-vous</h2>
+        <p class="info-text">Entrez votre nom et email pour voir vos colis</p>
+
+        <form (ngSubmit)="rechercherColis()" class="search-form">
+            <div class="form-group">
+                <label for="nom">Nom complet *</label>
+                <input type="text" id="nom" [(ngModel)]="nom" name="nom" class="form-control" placeholder="Votre nom"
+                    required />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" [(ngModel)]="email" name="email" class="form-control"
+                    placeholder="votre@email.com" required />
+            </div>
+
+            @if (errorMessage()) {
+            <div class="error-message">
+                {{ errorMessage() }}
+            </div>
+            }
+
+            <button type="submit" class="btn-search" [disabled]="loading()">
+                @if (loading()) {
+                <span class="spinner-small"></span> Recherche...
+                } @else {
+                🔍 Rechercher mes colis
+                }
+            </button>
+        </form>
+    </div>
+    }
+
+    <!-- Résultats -->
+    @if (showResults()) {
+    <div class="results-section">
+        <div class="results-header">
+            <h2>Vos Colis ({{ colis().length }})</h2>
+            <button class="btn-secondary" (click)="nouvelleRecherche()">
+                Nouvelle recherche
+            </button>
+        </div>
+
+        @if (successMessage()) {
+        <div class="success-message">
+            ✅ {{ successMessage() }}
+        </div>
+        }
+
+        @if (errorMessage()) {
+        <div class="error-message">
+            {{ errorMessage() }}
+        </div>
+        }
+
+        @if (colis().length === 0) {
+        <div class="empty-state">
+            <p>Aucun colis trouvé</p>
+        </div>
+        } @else {
+        <div class="colis-grid">
+            @for (colisItem of colis(); track colisItem.id) {
+            <div class="colis-card">
+                <div class="colis-header">
+                    <span class="colis-id">{{ colisItem.id.substring(0, 8) }}</span>
+                    <span class="statut-badge" [ngClass]="getStatutClass(colisItem.statut)">
+                        {{ getStatutLabel(colisItem.statut) }}
+                    </span>
+                </div>
+
+                <div class="colis-body">
+                    <div class="colis-info">
+                        <p class="info-label">Description</p>
+                        <p class="info-value">{{ colisItem.description }}</p>
+                    </div>
+
+                    <div class="colis-info">
+                        <p class="info-label">Destination</p>
+                        <p class="info-value">📍 {{ colisItem.villeDestination }}</p>
+                    </div>
+                    <div class="colis-info-row">
+                        <div class="colis-info">
+                            <p class="info-label">Poids</p>
+                            <p class="info-value">{{ colisItem.poids }} kg</p>
+                        </div>
+
+                        <div class="colis-info">
+                            <p class="info-label">Priorité</p>
+                            <p class="info-value">{{ colisItem.priorite }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="colis-actions">
+                    @if (colisItem.statut !== 'LIVRE') {
+                    <button class="btn-confirm" (click)="confirmerReception(colisItem)" [disabled]="loading()">
+                        ✓ Confirmer réception
+                    </button>
+                    } @else {
+                    <div class="delivered-badge">
+                        ✅ Livré
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+        }
+    </div>
+    }
+</div>

@@ -4,7 +4,7 @@ export interface Colis {
     poids: number;
     priorite: 'HAUTE' | 'MOYENNE' | 'BASSE';
     villeDestination: string;
-    statut: 'EN_ATTENTE' | 'EN_COURS' | 'LIVRE' | 'RETOURNE' | 'ANNULE';
+    statut: 'CREE' | 'COLLECTE' | 'EN_STOCK' | 'EN_TRANSIT' | 'LIVRE';
     livreurId?: string;
     clientExpediteurId: string;
     destinataireId: string;

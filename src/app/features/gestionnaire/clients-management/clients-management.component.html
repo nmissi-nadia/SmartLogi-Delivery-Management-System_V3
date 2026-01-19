@@ -47,7 +47,7 @@
                     <th>Nom Complet</th>
                     <th>Email</th>
                     <th>Téléphone</th>
-                    <th>Ville</th>
+                    <th>Adresse</th>
                     <th>Nombre de Colis</th>
                     <th>Actions</th>
                 </tr>
@@ -58,7 +58,7 @@
                     <td class="client-name">{{ client.nom }} {{ client.prenom }}</td>
                     <td>{{ client.email }}</td>
                     <td>{{ client.telephone || '-' }}</td>
-                    <td>{{ client.ville || '-' }}</td>
+                    <td>{{ client.adresse || '-' }}</td>
                     <td class="text-center">
                         <span class="badge badge-info">{{ client.nombreColis || 0 }}</span>
                     </td>
@@ -91,17 +91,6 @@
         <div class="modal-body">
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="username">Nom d'utilisateur *</label>
-                    <input type="text" id="username" [(ngModel)]="formData().username" [disabled]="isEditMode()"
-                        class="form-input" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email *</label>
-                    <input type="email" id="email" [(ngModel)]="formData().email" class="form-input" required>
-                </div>
-
-                <div class="form-group">
                     <label for="nom">Nom *</label>
                     <input type="text" id="nom" [(ngModel)]="formData().nom" class="form-input" required>
                 </div>
@@ -111,24 +100,19 @@
                     <input type="text" id="prenom" [(ngModel)]="formData().prenom" class="form-input" required>
                 </div>
 
+                <div class="form-group full-width">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" [(ngModel)]="formData().email" class="form-input" required>
+                </div>
+
                 <div class="form-group">
                     <label for="telephone">Téléphone</label>
                     <input type="tel" id="telephone" [(ngModel)]="formData().telephone" class="form-input">
                 </div>
 
-                <div class="form-group">
-                    <label for="ville">Ville</label>
-                    <input type="text" id="ville" [(ngModel)]="formData().ville" class="form-input">
-                </div>
-
                 <div class="form-group full-width">
                     <label for="adresse">Adresse</label>
                     <input type="text" id="adresse" [(ngModel)]="formData().adresse" class="form-input">
-                </div>
-
-                <div class="form-group">
-                    <label for="codePostal">Code Postal</label>
-                    <input type="text" id="codePostal" [(ngModel)]="formData().codePostal" class="form-input">
                 </div>
             </div>
         </div>

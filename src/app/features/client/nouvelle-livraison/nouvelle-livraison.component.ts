@@ -295,10 +295,8 @@ export class NouvelleLivraisonComponent implements OnInit {
             };
         }
 
-        // Préparer le client expéditeur (TODO: récupérer depuis le token JWT)
-        const clientExpediteur = {
-            id: '1' // TODO: Récupérer l'ID réel depuis le token JWT
-        };
+        // Préparer le client expéditeur (ignoré par le backend, utilise l'utilisateur connecté)
+        const clientExpediteur = {};
 
         // Préparer les données complètes selon ColisRequestDTO
         const colisData: ColisRequestDTO = {

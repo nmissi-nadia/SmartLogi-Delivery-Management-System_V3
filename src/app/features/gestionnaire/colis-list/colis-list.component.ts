@@ -69,7 +69,7 @@ export class ColisListComponent implements OnInit {
   commentaire = signal('');
 
   // Options
-  statutOptions = ['EN_ATTENTE', 'EN_COURS', 'LIVRE', 'RETOURNE', 'ANNULE'];
+  statutOptions = ['CREE', 'COLLECTE', 'EN_STOCK', 'EN_TRANSIT', 'LIVRE'];
   prioriteOptions = ['HAUTE', 'MOYENNE', 'BASSE'];
 
   ngOnInit(): void {
@@ -353,11 +353,11 @@ export class ColisListComponent implements OnInit {
    */
   getStatutBadgeClass(statut: string): string {
     const classes: { [key: string]: string } = {
-      'EN_ATTENTE': 'badge-warning',
-      'EN_COURS': 'badge-info',
-      'LIVRE': 'badge-success',
-      'RETOURNE': 'badge-danger',
-      'ANNULE': 'badge-secondary'
+      'CREE': 'badge-warning',
+      'COLLECTE': 'badge-info',
+      'EN_STOCK': 'badge-secondary',
+      'EN_TRANSIT': 'badge-primary',
+      'LIVRE': 'badge-success'
     };
     return classes[statut] || 'badge-secondary';
   }
