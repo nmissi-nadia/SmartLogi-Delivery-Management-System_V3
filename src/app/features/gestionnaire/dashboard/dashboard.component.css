@@ -14,7 +14,7 @@
     font-size: 2.5rem;
     color: var(--text-dark, #1a1a1a);
     margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #cab31f 0%, #474641 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -67,7 +67,7 @@
 }
 
 .kpi-card.total::before {
-    background: #3b82f6;
+    background: #f6893b;
 }
 
 .kpi-card.attente::before {
@@ -83,7 +83,7 @@
 }
 
 .kpi-card.taux::before {
-    background: #ec4899;
+    background: #f1d102;
 }
 
 .kpi-icon {
@@ -142,7 +142,7 @@
     height: 180px;
     border-radius: 50%;
     background: conic-gradient(#f59e0b 0deg 120deg,
-            #8b5cf6 120deg 240deg,
+    #cf6011 120deg 240deg,
             #10b981 240deg 360deg);
     display: flex;
     align-items: center;

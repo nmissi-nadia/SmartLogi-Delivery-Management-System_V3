@@ -114,6 +114,16 @@
                     <label for="adresse">Adresse</label>
                     <input type="text" id="adresse" [(ngModel)]="formData().adresse" class="form-input">
                 </div>
+
+                <div class="form-group full-width">
+                    <label for="userId">Compte Utilisateur</label>
+                    <select id="userId" [(ngModel)]="formData().userId" class="form-input">
+                        <option value="">-- Sélectionner un utilisateur --</option>
+                        @for (user of users(); track user.id) {
+                        <option [value]="user.id">{{ user.username }} ({{ user.email }})</option>
+                        }
+                    </select>
+                </div>
             </div>
         </div>
 
