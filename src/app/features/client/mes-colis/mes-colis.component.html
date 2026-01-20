@@ -18,30 +18,36 @@
         </div>
     </div>
 
-    <!-- Filtres -->
+    <!-- Filtres avec stats NgRx -->
+    @if (stats$ | async; as stats) {
     <div class="filters-bar">
-        <button class="filter-btn" [class.active]="filtreStatut() === 'tous'" (click)="changerFiltre('tous')">
-            Tous ({{ colis().length }})
+        <button class="filter-btn" [class.active]="(filters$ | async)?.statut === 'tous'"
+            (click)="changerFiltre('tous')">
+            Tous ({{ stats.total }})
         </button>
-        <button class="filter-btn" [class.active]="filtreStatut() === 'CREE'" (click)="changerFiltre('CREE')">
-            Créé
+        <button class="filter-btn" [class.active]="(filters$ | async)?.statut === 'CREE'"
+            (click)="changerFiltre('CREE')">
+            Créé ({{ stats.cree }})
         </button>
-        <button class="filter-btn" [class.active]="filtreStatut() === 'EN_TRANSIT'"
+        <button class="filter-btn" [class.active]="(filters$ | async)?.statut === 'EN_TRANSIT'"
             (click)="changerFiltre('EN_TRANSIT')">
-            En transit
+            En transit ({{ stats.enTransit }})
         </button>
-        <button class="filter-btn" [class.active]="filtreStatut() === 'EN_LIVRAISON'"
-            (click)="changerFiltre('EN_LIVRAISON')">
-            En livraison
-        </button>
-        <button class="filter-btn" [class.active]="filtreStatut() === 'LIVRE'" (click)="changerFiltre('LIVRE')">
-            Livrés
+        <button class="filter-btn" [class.active]="(filters$ | async)?.statut === 'LIVRE'"
+            (click)="changerFiltre('LIVRE')">
+            Livrés ({{ stats.livre }})
         </button>
     </div>
+    }
 
-    <!-- Liste des colis -->
+    <!-- Liste des colis depuis NgRx Store -->
     <div class="colis-grid">
-        @for (col of colisFiltres; track col.id) {
+        @if (loading$ | async) {
+        <div class="loading">Chargement...</div>
+        } @else if (error$ | async; as error) {
+        <div class="error">{{ error }}</div>
+        } @else {
+        @for (col of colis$ | async; track col.id) {
         <div class="colis-card">
             <div class="card-header">
                 <div class="numero">{{ col.id.substring(0, 8) }}</div>
@@ -58,7 +64,7 @@
 
                 <div class="info-row">
                     <span class="label">👤 Destinataire:</span>
-                    <span class="value">{{ col.destinataireNom || ('ID: ' + col.destinataireId) }}</span>
+                    <span class="value">ID: {{ col.destinataireId }}</span>
                 </div>
 
                 <div class="info-row">
@@ -101,6 +107,7 @@
                 Nouvelle livraison
             </button>
         </div>
+        }
         }
     </div>
 </div>

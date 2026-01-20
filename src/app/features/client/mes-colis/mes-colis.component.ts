@@ -1,20 +1,15 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
+import { Component, computed, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { ColisService, type Colis } from '../../../core/services/colis.service';
-import { DestinataireService } from '../../../core/services/destinataire.service';
-import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-
-// Interface enrichie avec les détails
-interface ColisEnrichi extends Colis {
-    destinataireNom?: string;
-    livreurNom?: string;
-}
+import { AppState } from '../../../store/colis/colis.state';
+import * as ColisActions from '../../../store/colis/colis.actions';
+import * as ColisSelectors from '../../../store/colis/colis.selectors';
 
 /**
  * Composant pour afficher la liste des colis du client
+ * Utilise NgRx Store pour la gestion d'état
  */
 @Component({
     selector: 'app-mes-colis',
@@ -24,84 +19,34 @@ interface ColisEnrichi extends Colis {
     styleUrl: './mes-colis.component.css'
 })
 export class MesColisComponent implements OnInit {
-    private readonly colisService = inject(ColisService);
-    private readonly destinataireService = inject(DestinataireService);
+    private readonly store = inject(Store<AppState>);
 
-    colis = signal<ColisEnrichi[]>([]);
-    filtreStatut = signal<string>('tous');
-    loading = signal(true);
-    errorMessage = signal<string | null>(null);
+    // Sélection des données depuis le store
+    colis$ = this.store.select(ColisSelectors.selectFilteredColis);
+    loading$ = this.store.select(ColisSelectors.selectColisLoading);
+    error$ = this.store.select(ColisSelectors.selectColisError);
+    filters$ = this.store.select(ColisSelectors.selectColisFilters);
+    stats$ = this.store.select(ColisSelectors.selectColisCountByStatut);
 
     ngOnInit(): void {
-        this.chargerColis();
+        // Dispatch l'action pour charger les colis
+        // TODO: Récupérer l'ID du client depuis le token JWT
+        const clientId = '1';
+        this.store.dispatch(ColisActions.loadColisByClient({ clientId }));
     }
 
     /**
-     * Charge les colis depuis l'API et enrichit avec les détails
+     * Change le filtre de statut
      */
-    private chargerColis(): void {
-        this.loading.set(true);
-        this.errorMessage.set(null);
-
-        // TODO: Récupérer l'ID du client depuis le token JWT
-        const clientId = '1';
-
-        this.colisService.getColisByClient(clientId).subscribe({
-            next: (colis) => {
-                // Enrichir chaque colis avec les détails du destinataire
-                const enrichissements = colis.map(col =>
-                    this.destinataireService.getDestinataireById(col.destinataireId).pipe(
-                        map(dest => ({
-                            ...col,
-                            destinataireNom: `${dest.prenom} ${dest.nom}`
-                        } as ColisEnrichi)),
-                        catchError(() => of({
-                            ...col,
-                            destinataireNom: `ID: ${col.destinataireId}`
-                        } as ColisEnrichi))
-                    )
-                );
-
-                // Attendre que tous les enrichissements soient terminés
-                if (enrichissements.length === 0) {
-                    this.colis.set([]);
-                    this.loading.set(false);
-                    return;
-                }
-
-                forkJoin(enrichissements).subscribe({
-                    next: (colisEnrichis) => {
-                        this.colis.set(colisEnrichis);
-                        this.loading.set(false);
-                    },
-                    error: () => {
-                        this.colis.set(colis as ColisEnrichi[]);
-                        this.loading.set(false);
-                    }
-                });
-            },
-            error: (error) => {
-                console.error('Erreur chargement colis:', error);
-                this.errorMessage.set('Erreur lors du chargement des colis');
-                this.loading.set(false);
-            }
-        });
-    }
-
-    filtrerParStatut(statut: string): void {
-        this.filtreStatut.set(statut);
-    }
-
     changerFiltre(statut: string): void {
-        this.filtreStatut.set(statut);
+        this.store.dispatch(ColisActions.setStatutFilter({ statut }));
     }
 
-    get colisFiltres(): ColisEnrichi[] {
-        const statut = this.filtreStatut();
-        if (statut === 'tous') {
-            return this.colis();
-        }
-        return this.colis().filter(c => c.statut === statut);
+    /**
+     * Sélectionne un colis
+     */
+    selectColis(colisId: string): void {
+        this.store.dispatch(ColisActions.selectColis({ colisId }));
     }
 
     getStatutClass(statut: string): string {
