@@ -26,6 +26,10 @@
             ],
             "styles": [
               "src/styles.css"
+            ],
+            "scripts": [],
+            "polyfills": [
+              "zone.js"
             ]
           },
           "configurations": {
