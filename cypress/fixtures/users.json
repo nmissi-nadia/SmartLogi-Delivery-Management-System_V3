@@ -1,0 +1,34 @@
+{
+    "gestionnaire": {
+        "username": "gestionnaire",
+        "password": "password123",
+        "email": "gestionnaire@smartlogi.com",
+        "roles": [
+            "GESTIONNAIRE"
+        ]
+    },
+    "client": {
+        "username": "client",
+        "password": "password123",
+        "email": "client@smartlogi.com",
+        "roles": [
+            "CLIENT"
+        ]
+    },
+    "livreur": {
+        "username": "livreur",
+        "password": "password123",
+        "email": "livreur@smartlogi.com",
+        "roles": [
+            "LIVREUR"
+        ]
+    },
+    "destinataire": {
+        "username": "destinataire",
+        "password": "password123",
+        "email": "destinataire@smartlogi.com",
+        "roles": [
+            "DESTINATAIRE"
+        ]
+    }
+}

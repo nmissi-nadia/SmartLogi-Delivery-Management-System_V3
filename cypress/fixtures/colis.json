@@ -1,0 +1,33 @@
+{
+    "sampleColis": {
+        "id": "COL-001",
+        "description": "Colis de test",
+        "poids": 5.5,
+        "hauteur": 20,
+        "largeur": 15,
+        "longueur": 30,
+        "statut": "CREE",
+        "dateCreation": "2026-01-21T10:00:00"
+    },
+    "colisEnTransit": {
+        "id": "COL-002",
+        "description": "Colis en transit",
+        "poids": 3.2,
+        "hauteur": 15,
+        "largeur": 10,
+        "longueur": 20,
+        "statut": "EN_TRANSIT",
+        "dateCreation": "2026-01-20T14:30:00"
+    },
+    "colisLivre": {
+        "id": "COL-003",
+        "description": "Colis livré",
+        "poids": 2.0,
+        "hauteur": 10,
+        "largeur": 10,
+        "longueur": 15,
+        "statut": "LIVRE",
+        "dateCreation": "2026-01-19T09:00:00",
+        "dateLivraison": "2026-01-20T16:00:00"
+    }
+}
