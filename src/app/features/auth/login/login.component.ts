@@ -36,6 +36,8 @@ export class LoginComponent {
         });
     }
 
+    private readonly route = inject(import('@angular/router').ActivatedRoute);
+
     /**
      * Soumet le formulaire de connexion
      */
@@ -61,8 +63,11 @@ export class LoginComponent {
                 console.log('Connexion réussie:', response);
                 this.loading.set(false);
 
-                // Rediriger selon le rôle de l'utilisateur
-                this.authService.redirectByRole();
+                // Récupérer le returnUrl depuis les queryParams
+                const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+
+                // Rediriger selon le rôle de l'utilisateur ou vers le returnUrl
+                this.authService.redirectByRole(returnUrl);
             },
             error: (error) => {
                 console.error('Erreur de connexion:', error);

@@ -2,31 +2,26 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-access-denied',
-  standalone: true,
-  imports: [RouterLink],
-  template: `
-    <div class="access-denied-container">
+    selector: 'app-not-found',
+    standalone: true,
+    imports: [RouterLink],
+    template: `
+    <div class="not-found-container">
       <div class="glass-card">
-        <div class="icon-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-red-500">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-          </svg>
-        </div>
-        <h1>403</h1>
-        <h2>Accès Refusé</h2>
-        <p>Désolé, vous n'avez pas les permissions nécessaires pour accéder à cette page. Veuillez contacter votre administrateur si vous pensez qu'il s'agit d'une erreur.</p>
+        <h1>404</h1>
+        <h2>Page non trouvée</h2>
+        <p>Désolé, la page que vous recherchez n'existe pas ou a été déplacée.</p>
         <button routerLink="/" class="btn-primary">Retour à l'accueil</button>
       </div>
     </div>
   `,
-  styles: [`
-    .access-denied-container {
+    styles: [`
+    .not-found-container {
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: white;
       font-family: 'Inter', sans-serif;
     }
@@ -40,18 +35,12 @@ import { RouterLink } from '@angular/router';
       max-width: 500px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
-    .icon-wrapper {
-      margin-bottom: 1.5rem;
-      display: flex;
-      justify-content: center;
-    }
-    .w-16 { width: 4rem; }
-    .h-16 { height: 4rem; }
-    .text-red-500 { color: #ef4444; }
     h1 {
-      font-size: 6rem;
+      font-size: 8rem;
       margin: 0;
-      color: #ef4444;
+      background: linear-gradient(to right, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       line-height: 1;
     }
     h2 {
@@ -65,7 +54,7 @@ import { RouterLink } from '@angular/router';
       line-height: 1.6;
     }
     .btn-primary {
-      background: linear-gradient(to right, #4338ca, #6366f1);
+      background: linear-gradient(to right, #0284c7, #4f46e5);
       color: white;
       border: none;
       padding: 0.75rem 2rem;
@@ -81,4 +70,4 @@ import { RouterLink } from '@angular/router';
     }
   `]
 })
-export class AccessDeniedComponent { }
+export class NotFoundComponent { }

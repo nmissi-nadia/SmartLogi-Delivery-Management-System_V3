@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZoneChangeDetection, isDevMode } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
@@ -26,7 +26,8 @@ import { ZonesEffects } from './store/zones/zones.effects';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+    provideRouter(routes, withPreloading(PreloadAllModules)),
+
     provideHttpClient(
       withInterceptors([jwtInterceptor, errorInterceptor])
     ),

@@ -199,9 +199,15 @@ export class AuthService {
     }
 
     /**
-     * Redirige l'utilisateur vers la page appropriée selon son rôle
+     * Redirige l'utilisateur vers la page appropriée selon son rôle ou une URL de retour
+     * @param returnUrl - URL vers laquelle rediriger si elle existe
      */
-    redirectByRole(): void {
+    redirectByRole(returnUrl?: string): void {
+        if (returnUrl) {
+            this.router.navigateByUrl(returnUrl);
+            return;
+        }
+
         const roles = this.getUserRoles();
 
         if (roles.includes(Role.GESTIONNAIRE)) {
