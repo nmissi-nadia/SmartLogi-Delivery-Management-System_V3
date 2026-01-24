@@ -39,7 +39,7 @@ export class MesColisComponent implements OnInit {
      * Change le filtre de statut
      */
     changerFiltre(statut: string): void {
-        this.store.dispatch(ColisActions.setStatutFilter({ statut }));
+        this.store.dispatch(ColisActions.setColisStatutFilter({ statut }));
     }
 
     /**

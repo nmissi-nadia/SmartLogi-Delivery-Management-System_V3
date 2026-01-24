@@ -69,4 +69,23 @@ export class ColisEffects {
             )
         )
     );
+
+    /**
+     * Effect pour charger un colis par ID
+     */
+    loadColisById$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ColisActions.loadColisById),
+            switchMap(({ colisId }) =>
+                this.colisService.getColisById(colisId).pipe(
+                    map(colis => ColisActions.loadColisByIdSuccess({ colis })),
+                    catchError(error =>
+                        of(ColisActions.loadColisByIdFailure({
+                            error: error.message || 'Erreur lors du chargement du colis'
+                        }))
+                    )
+                )
+            )
+        )
+    );
 }

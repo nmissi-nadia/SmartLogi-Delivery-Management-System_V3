@@ -53,6 +53,27 @@ export const colisReducer = createReducer(
         selectedColis: null
     })),
 
+    // Load Colis By Id
+    on(ColisActions.loadColisById, (state): ColisState => ({
+        ...state,
+        loading: true,
+        error: null
+    })),
+
+    on(ColisActions.loadColisByIdSuccess, (state, { colis }): ColisState => ({
+        ...state,
+        selectedColis: colis,
+        loading: false,
+        error: null
+    })),
+
+    on(ColisActions.loadColisByIdFailure, (state, { error }): ColisState => ({
+        ...state,
+        loading: false,
+        error
+    })),
+
+
     // Update Statut
     on(ColisActions.updateColisStatut, (state): ColisState => ({
         ...state,
@@ -75,7 +96,7 @@ export const colisReducer = createReducer(
     })),
 
     // Filters
-    on(ColisActions.setStatutFilter, (state, { statut }): ColisState => ({
+    on(ColisActions.setColisStatutFilter, (state, { statut }): ColisState => ({
         ...state,
         filters: {
             ...state.filters,
@@ -83,7 +104,7 @@ export const colisReducer = createReducer(
         }
     })),
 
-    on(ColisActions.setRechercheFilter, (state, { recherche }): ColisState => ({
+    on(ColisActions.setColisRechercheFilter, (state, { recherche }): ColisState => ({
         ...state,
         filters: {
             ...state.filters,
@@ -91,7 +112,7 @@ export const colisReducer = createReducer(
         }
     })),
 
-    on(ColisActions.clearFilters, (state): ColisState => ({
+    on(ColisActions.clearColisFilters, (state): ColisState => ({
         ...state,
         filters: initialColisState.filters
     }))

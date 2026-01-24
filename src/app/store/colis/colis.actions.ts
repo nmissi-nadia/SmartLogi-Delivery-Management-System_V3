@@ -44,6 +44,25 @@ export const clearSelectedColis = createAction(
 );
 
 /**
+ * Actions pour charger un colis par ID
+ */
+export const loadColisById = createAction(
+    '[Colis] Load Colis By Id',
+    props<{ colisId: string }>()
+);
+
+export const loadColisByIdSuccess = createAction(
+    '[Colis] Load Colis By Id Success',
+    props<{ colis: Colis }>()
+);
+
+export const loadColisByIdFailure = createAction(
+    '[Colis] Load Colis By Id Failure',
+    props<{ error: string }>()
+);
+
+
+/**
  * Actions pour mettre à jour le statut
  */
 export const updateColisStatut = createAction(
@@ -62,18 +81,19 @@ export const updateColisStatutFailure = createAction(
 );
 
 /**
- * Actions pour les filtres
+ * Actions pour les filtres locaux des colis
+ * Note: Pour les filtres globaux, utiliser le store Filters
  */
-export const setStatutFilter = createAction(
-    '[Colis] Set Statut Filter',
+export const setColisStatutFilter = createAction(
+    '[Colis] Set Colis Statut Filter',
     props<{ statut: string }>()
 );
 
-export const setRechercheFilter = createAction(
-    '[Colis] Set Recherche Filter',
+export const setColisRechercheFilter = createAction(
+    '[Colis] Set Colis Recherche Filter',
     props<{ recherche: string }>()
 );
 
-export const clearFilters = createAction(
-    '[Colis] Clear Filters'
+export const clearColisFilters = createAction(
+    '[Colis] Clear Colis Filters'
 );
