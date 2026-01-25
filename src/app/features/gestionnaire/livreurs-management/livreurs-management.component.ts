@@ -1,210 +1,76 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Store } from '@ngrx/store';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { LivreurService } from '../../../core/services/livreur.service';
-import type { Livreur } from '../../../core/services/livreur.service';
-import { UserService, type User } from '../../../core/services/user.service';
+import { LivreurFormComponent } from '../../../shared/components/forms/livreur-form/livreur-form.component';
+import { Livreur, CreateLivreurDTO } from '../../../core/services/livreur.service';
+import { AppState } from '../../../store';
+import * as LivreursActions from '../../../store/livreurs/livreurs.actions';
+import * as LivreursSelectors from '../../../store/livreurs/livreurs.selectors';
 
 /**
  * Composant pour gérer les livreurs (Gestionnaire)
+ * Utilisé pour lister, créer, modifier et supprimer des livreurs via NgRx
  */
 @Component({
   selector: 'app-livreurs-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, NavbarComponent, LivreurFormComponent],
   templateUrl: './livreurs-management.component.html',
   styleUrl: './livreurs-management.component.css'
 })
 export class LivreursManagementComponent implements OnInit {
-  private readonly livreurService = inject(LivreurService);
-  private readonly userService = inject(UserService);
+  private readonly store = inject(Store<AppState>);
 
-  livreurs = signal<Livreur[]>([]);
-  users = signal<User[]>([]);
-  loading = signal(true);
-  errorMessage = signal<string | null>(null);
+  // Sélecteurs NgRx
+  livreurs$ = this.store.select(LivreursSelectors.selectAllLivreurs);
+  loading$ = this.store.select(LivreursSelectors.selectLivreursLoading);
+  error$ = this.store.select(LivreursSelectors.selectLivreursError);
 
-  // Modal
+  // État local pour l'UI
   showModal = signal(false);
   isEditMode = signal(false);
-  currentLivreur = signal<Livreur | null>(null);
-
-  // Formulaire simplifié
-  formData = signal({
-    nom: '',
-    prenom: '',
-    telephone: '',
-    vehicule: '',
-    zoneId: '',
-    userId: ''
-  });
+  selectedLivreur = signal<Livreur | null>(null);
 
   ngOnInit(): void {
-    this.chargerLivreurs();
-    this.chargerUtilisateurs();
+    this.store.dispatch(LivreursActions.loadLivreurs());
   }
 
-  /**
-   * Charge tous les livreurs
-   */
-  private chargerLivreurs(): void {
-    this.loading.set(true);
-    this.errorMessage.set(null);
-
-    this.livreurService.getAllLivreurs().subscribe({
-      next: (livreurs) => {
-        this.livreurs.set(livreurs);
-        this.loading.set(false);
-      },
-      error: (error) => {
-        console.error('Erreur chargement livreurs:', error);
-        this.errorMessage.set('Erreur lors du chargement des livreurs');
-        this.loading.set(false);
-      }
-    });
-  }
-
-  /**
-   * Charge tous les utilisateurs
-   */
-  private chargerUtilisateurs(): void {
-    this.userService.getAllUsers().subscribe({
-      next: (users) => {
-        this.users.set(users);
-      },
-      error: (error) => {
-        console.error('Erreur chargement utilisateurs:', error);
-      }
-    });
-  }
-
-  /**
-   * Ouvre le modal pour créer un livreur
-   */
   ouvrirModalCreation(): void {
     this.isEditMode.set(false);
-    this.currentLivreur.set(null);
-    this.formData.set({
-      nom: '',
-      prenom: '',
-      telephone: '',
-      vehicule: '',
-      zoneId: '',
-      userId: ''
-    });
+    this.selectedLivreur.set(null);
     this.showModal.set(true);
   }
 
-  /**
-   * Ouvre le modal pour modifier un livreur
-   */
   ouvrirModalModification(livreur: Livreur): void {
     this.isEditMode.set(true);
-    this.currentLivreur.set(livreur);
-    this.formData.set({
-      nom: livreur.nom,
-      prenom: livreur.prenom,
-      telephone: livreur.telephone,
-      vehicule: livreur.vehicule || '',
-      zoneId: livreur.zoneId || '',
-      userId: livreur.userId || ''
-    });
+    this.selectedLivreur.set(livreur);
     this.showModal.set(true);
   }
 
-  /**
-   * Ferme le modal
-   */
   fermerModal(): void {
     this.showModal.set(false);
-    this.currentLivreur.set(null);
+    this.selectedLivreur.set(null);
   }
 
-  /**
-   * Soumet le formulaire
-   */
-  soumettre(): void {
-    const data = this.formData();
-
-    if (!data.nom || !data.prenom || !data.telephone || (!this.isEditMode() && !data.userId)) {
-      alert('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
-
-    if (this.isEditMode()) {
-      this.modifierLivreur();
+  onFormSubmit(data: CreateLivreurDTO): void {
+    if (this.isEditMode() && this.selectedLivreur()) {
+      this.store.dispatch(LivreursActions.updateLivreur({
+        id: this.selectedLivreur()!.id,
+        livreur: data as Partial<CreateLivreurDTO>
+      }));
     } else {
-      this.creerLivreur();
+      this.store.dispatch(LivreursActions.createLivreur({ livreur: data }));
     }
+    // Note: Dans un cas réel, on attendrait le succès du store pour fermer le modal
+    // Pour simplifier, on ferme ici ou via un effect qui écoute le succès
+    this.fermerModal();
   }
 
-  /**
-   * Crée un nouveau livreur
-   */
-  private creerLivreur(): void {
-    const data = this.formData();
-
-    // Format selon LivreurDTO backend
-    const payload = {
-      nom: data.nom,
-      prenom: data.prenom,
-      telephone: data.telephone,
-      vehicule: data.vehicule || null,
-      zoneId: data.zoneId || null,
-      userId: data.userId
-    };
-
-    console.log('Payload envoyé:', payload);
-
-    this.livreurService.createLivreur(payload as any).subscribe({
-      next: () => {
-        this.chargerLivreurs();
-        this.fermerModal();
-      },
-      error: (error) => {
-        console.error('Erreur création livreur:', error);
-        console.error('Détails:', error.error);
-        alert(`Erreur lors de la création du livreur: ${error.error?.message || error.message}`);
-      }
-    });
-  }
-
-  /**
-   * Modifie un livreur existant
-   */
-  private modifierLivreur(): void {
-    const livreur = this.currentLivreur();
-    if (!livreur) return;
-
-    const updatedData = this.formData();
-
-    this.livreurService.updateLivreur(livreur.id, updatedData as any).subscribe({
-      next: () => {
-        this.chargerLivreurs();
-        this.fermerModal();
-      },
-      error: (error) => {
-        console.error('Erreur modification livreur:', error);
-        alert('Erreur lors de la modification du livreur');
-      }
-    });
-  }
-
-  /**
-   * Supprime un livreur
-   */
-  supprimerLivreur(livreurId: string): void {
+  supprimerLivreur(id: string): void {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce livreur ?')) {
-      this.livreurService.deleteLivreur(livreurId).subscribe({
-        next: () => {
-          this.chargerLivreurs();
-        },
-        error: (error) => {
-          console.error('Erreur suppression livreur:', error);
-          alert('Erreur lors de la suppression du livreur');
-        }
-      });
+      this.store.dispatch(LivreursActions.deleteLivreur({ id }));
     }
   }
 }
+

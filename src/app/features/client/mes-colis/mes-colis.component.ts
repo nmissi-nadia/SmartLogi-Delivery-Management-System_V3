@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -6,6 +6,8 @@ import { NavbarComponent } from '../../../shared/components/navbar/navbar.compon
 import { AppState } from '../../../store/colis/colis.state';
 import * as ColisActions from '../../../store/colis/colis.actions';
 import * as ColisSelectors from '../../../store/colis/colis.selectors';
+import { selectUserId } from '../../../store/auth/auth.selectors';
+
 
 /**
  * Composant pour afficher la liste des colis du client
@@ -29,11 +31,15 @@ export class MesColisComponent implements OnInit {
     stats$ = this.store.select(ColisSelectors.selectColisCountByStatut);
 
     ngOnInit(): void {
-        // Dispatch l'action pour charger les colis
-        // TODO: Récupérer l'ID du client depuis le token JWT
-        const clientId = '1';
-        this.store.dispatch(ColisActions.loadColisByClient({ clientId }));
+        // Récupérer l'ID du client depuis le store
+        this.store.select(selectUserId).subscribe(userId => {
+            if (userId) {
+                this.store.dispatch(ColisActions.loadColisByClient({ clientId: userId.toString() }));
+            }
+        });
     }
+
+
 
     /**
      * Change le filtre de statut

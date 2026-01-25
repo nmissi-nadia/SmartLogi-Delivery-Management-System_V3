@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 /**
@@ -19,6 +19,7 @@ export class LoginComponent {
     private readonly fb = inject(FormBuilder);
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
+    private readonly route = inject(ActivatedRoute);
 
     // Formulaire réactif
     loginForm: FormGroup;
@@ -35,8 +36,6 @@ export class LoginComponent {
             password: ['', [Validators.required, Validators.minLength(6)]]
         });
     }
-
-    private readonly route = inject(import('@angular/router').ActivatedRoute);
 
     /**
      * Soumet le formulaire de connexion

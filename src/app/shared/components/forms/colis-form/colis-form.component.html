@@ -1,0 +1,157 @@
+<form [formGroup]="colisForm" (ngSubmit)="onSubmit()" class="colis-form glass-panel">
+    <h2 class="form-title">{{ initialData ? 'Modifier le Colis' : 'Nouveau Colis' }}</h2>
+
+    <!-- Informations Générales -->
+    <section class="form-section">
+        <h3>Informations Générales</h3>
+        <div class="grid-container">
+            <div class="form-group full-width">
+                <label for="description">Description</label>
+                <textarea id="description" formControlName="description"
+                    placeholder="Description détaillée du contenu..."></textarea>
+                <app-input-error [control]="colisForm.get('description')"></app-input-error>
+            </div>
+
+            <div class="form-group">
+                <label for="poids">Poids total (kg)</label>
+                <input type="number" id="poids" formControlName="poids" step="0.1" placeholder="ex: 5.5">
+                <app-input-error [control]="colisForm.get('poids')"></app-input-error>
+            </div>
+
+            <div class="form-group">
+                <label for="priorite">Priorité</label>
+                <select id="priorite" formControlName="priorite">
+                    <option value="BASSE">Basse</option>
+                    <option value="MOYENNE">Moyenne</option>
+                    <option value="HAUTE">Haute</option>
+                </select>
+                <app-input-error [control]="colisForm.get('priorite')"></app-input-error>
+            </div>
+
+            <div class="form-group">
+                <label for="villeDestination">Ville de Destination</label>
+                <input type="text" id="villeDestination" formControlName="villeDestination"
+                    placeholder="ex: Casablanca">
+                <app-input-error [control]="colisForm.get('villeDestination')"></app-input-error>
+            </div>
+
+            <div class="form-group">
+                <app-autocomplete label="Zone de livraison" placeholder="Rechercher une zone..."
+                    [options]="filteredZones" displayKey="nom" valueKey="id" formControlName="zoneId"
+                    (searchChange)="onZoneSearch($event)"></app-autocomplete>
+            </div>
+        </div>
+    </section>
+
+    <!-- Informations Expéditeur -->
+    <section class="form-section" formGroupName="clientExpediteur">
+        <h3>Expéditeur</h3>
+        <div class="grid-container">
+            <div class="form-group">
+                <label>Nom</label>
+                <input type="text" formControlName="nom">
+                <app-input-error [control]="colisForm.get('clientExpediteur.nom')"></app-input-error>
+            </div>
+            <div class="form-group">
+                <label>Prénom</label>
+                <input type="text" formControlName="prenom">
+                <app-input-error [control]="colisForm.get('clientExpediteur.prenom')"></app-input-error>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" formControlName="email">
+                <app-input-error [control]="colisForm.get('clientExpediteur.email')"></app-input-error>
+            </div>
+            <div class="form-group">
+                <label>Téléphone</label>
+                <input type="text" formControlName="telephone">
+                <app-input-error [control]="colisForm.get('clientExpediteur.telephone')"></app-input-error>
+            </div>
+            <div class="form-group full-width">
+                <label>Adresse</label>
+                <input type="text" formControlName="adresse">
+                <app-input-error [control]="colisForm.get('clientExpediteur.adresse')"></app-input-error>
+            </div>
+        </div>
+    </section>
+
+    <!-- Informations Destinataire -->
+    <section class="form-section" formGroupName="destinataire">
+        <h3>Destinataire</h3>
+        <div class="grid-container">
+            <div class="form-group">
+                <label>Nom</label>
+                <input type="text" formControlName="nom">
+                <app-input-error [control]="colisForm.get('destinataire.nom')"></app-input-error>
+            </div>
+            <div class="form-group">
+                <label>Prénom</label>
+                <input type="text" formControlName="prenom">
+                <app-input-error [control]="colisForm.get('destinataire.prenom')"></app-input-error>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" formControlName="email">
+                <app-input-error [control]="colisForm.get('destinataire.email')"></app-input-error>
+            </div>
+            <div class="form-group">
+                <label>Téléphone</label>
+                <input type="text" formControlName="telephone">
+                <app-input-error [control]="colisForm.get('destinataire.telephone')"></app-input-error>
+            </div>
+            <div class="form-group full-width">
+                <label>Adresse</label>
+                <input type="text" formControlName="adresse">
+                <app-input-error [control]="colisForm.get('destinataire.adresse')"></app-input-error>
+            </div>
+        </div>
+    </section>
+
+    <!-- Liste des Produits -->
+    <section class="form-section">
+        <div class="section-header">
+            <h3>Produits</h3>
+            <button type="button" class="btn-add" (click)="addProduit()">+ Ajouter un produit</button>
+        </div>
+
+        <div formArrayName="produits" class="produits-list">
+            <div *ngFor="let item of produits.controls; let i = index" [formGroupName]="i" class="produit-item">
+                <div class="produit-grid">
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" formControlName="nom">
+                    </div>
+                    <div class="form-group">
+                        <label>Catégorie</label>
+                        <input type="text" formControlName="categorie">
+                    </div>
+                    <div class="form-group small">
+                        <label>Poids (kg)</label>
+                        <input type="number" formControlName="poids" step="0.1">
+                    </div>
+                    <div class="form-group small">
+                        <label>Prix (DH)</label>
+                        <input type="number" formControlName="prix" step="0.01">
+                    </div>
+                    <div class="form-group small">
+                        <label>Qté</label>
+                        <input type="number" formControlName="quantite" min="1">
+                    </div>
+                    <div class="produit-actions" *ngIf="produits.length > 1">
+                        <button type="button" class="btn-delete" (click)="removeProduit(i)" title="Supprimer">
+                            <i class="icon-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Actions Finale -->
+    <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="onCancel()">Annuler</button>
+        <button type="submit" class="btn-primary" [disabled]="colisForm.invalid">
+            {{ initialData ? 'Enregistrer les modifications' : 'Créer le Colis' }}
+        </button>
+    </div>
+</form>
