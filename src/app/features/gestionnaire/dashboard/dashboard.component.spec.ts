@@ -183,6 +183,10 @@ describe('DashboardComponent', () => {
             gestionnaireService.getAllColis.and.returnValue(of(mockColis));
 
             component.loading.set(true);
+
+            // Check loading state before detectChanges
+            expect(component.loading()).toBe(true);
+
             fixture.detectChanges();
 
             const compiled = fixture.nativeElement;
@@ -196,6 +200,10 @@ describe('DashboardComponent', () => {
 
             component.errorMessage.set('Test error');
             component.loading.set(false);
+
+            // Check the signal value before detectChanges
+            expect(component.errorMessage()).toBe('Test error');
+
             fixture.detectChanges();
 
             const compiled = fixture.nativeElement;
