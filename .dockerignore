@@ -1,0 +1,42 @@
+# Dépendances
+node_modules
+npm-debug.log
+
+# Build output
+dist
+.angular
+
+# Tests et coverage
+coverage
+*.spec.ts
+karma.conf.js
+cypress
+cypress.config.ts
+.cypress-cucumber-preprocessorrc.json
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environnement
+.env
+.env.local
+
+# Documentation
+README.md
+TESTING.md
+DEPLOYMENT.md
+
+# Scripts
+fix-colors.ps1

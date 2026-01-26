@@ -54,6 +54,28 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Deployment
+
+### Docker Deployment
+
+This project includes Docker support for easy deployment. To build and run the application using Docker:
+
+```bash
+# Using Docker Compose (recommended)
+docker-compose up -d
+
+# Or using the build script (Windows)
+.\scripts\build.ps1
+
+# Or using the build script (Linux/Mac)
+./scripts/build.sh
+```
+
+The application will be available at `http://localhost:8080`.
+
+For detailed deployment instructions, including production deployment, CI/CD setup, and troubleshooting, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Additional Resources
+
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

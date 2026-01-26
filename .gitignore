@@ -11,7 +11,6 @@
 /node_modules
 npm-debug.log
 yarn-error.log
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
@@ -86,3 +85,8 @@ ehthumbs_vista.db
 .angular/
 
 .vscode
+
+# Docker
+.env
+!.env.example
+
