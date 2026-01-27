@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 /**
@@ -19,6 +19,7 @@ export class LoginComponent {
     private readonly fb = inject(FormBuilder);
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
+    private readonly route = inject(ActivatedRoute);
 
     // Formulaire réactif
     loginForm: FormGroup;
@@ -61,8 +62,11 @@ export class LoginComponent {
                 console.log('Connexion réussie:', response);
                 this.loading.set(false);
 
-                // Rediriger selon le rôle de l'utilisateur
-                this.authService.redirectByRole();
+                // Récupérer le returnUrl depuis les queryParams
+                const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+
+                // Rediriger selon le rôle de l'utilisateur ou vers le returnUrl
+                this.authService.redirectByRole(returnUrl);
             },
             error: (error) => {
                 console.error('Erreur de connexion:', error);

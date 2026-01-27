@@ -5,6 +5,7 @@ export interface ClientExpediteur {
     email: string;
     telephone?: string;
     adresse?: string;
+    userId?: string; // User association
 
     // Propriétés enrichies (ajoutées par le frontend ou backend)
     nombreColis?: number;
@@ -19,6 +20,7 @@ export interface CreateClientDTO {
     email: string;
     telephone?: string;
     adresse?: string;
+    userId?: string; // User association
 }
 
 export interface ClientPage {

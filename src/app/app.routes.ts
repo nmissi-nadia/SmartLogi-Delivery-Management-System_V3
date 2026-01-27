@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { unsavedChangesGuard } from './core/guards/unsaved-changes.guard';
+import { permissionGuard } from './core/guards/permission.guard';
+import { userProfileResolver } from './core/resolvers/user-profile.resolver';
 import { Role } from './core/models/role.enum';
 
 export const routes: Routes = [
@@ -15,6 +18,7 @@ export const routes: Routes = [
         path: 'gestionnaire',
         loadChildren: () => import('./features/gestionnaire/gestionnaire.routes').then(m => m.GESTIONNAIRE_ROUTES),
         canActivate: [authGuard, roleGuard],
+        resolve: { user: userProfileResolver },
         data: { roles: [Role.GESTIONNAIRE] }
     },
 
@@ -23,6 +27,7 @@ export const routes: Routes = [
         path: 'livreur',
         loadChildren: () => import('./features/livreur/livreur.routes').then(m => m.LIVREUR_ROUTES),
         canActivate: [authGuard, roleGuard],
+        resolve: { user: userProfileResolver },
         data: { roles: [Role.LIVREUR] }
     },
 
@@ -31,6 +36,7 @@ export const routes: Routes = [
         path: 'client',
         loadChildren: () => import('./features/client/client.routes').then(m => m.CLIENT_ROUTES),
         canActivate: [authGuard, roleGuard],
+        resolve: { user: userProfileResolver },
         data: { roles: [Role.CLIENT] }
     },
 
@@ -67,9 +73,16 @@ export const routes: Routes = [
         pathMatch: 'full'
     },
 
-    // Route 404 - Page non trouvée
+    // Page 404 - Page non trouvée
+    {
+        path: '404',
+        loadComponent: () => import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent)
+    },
+
+    // Wildcard - Redirection vers 404
     {
         path: '**',
-        redirectTo: '/home'
+        redirectTo: '/404'
     }
 ];
+

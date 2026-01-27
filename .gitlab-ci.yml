@@ -1,0 +1,125 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  IMAGE_NAME: smartlogi-frontend
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+
+# Template pour les jobs Node.js
+.node_template: &node_template
+  image: node:20-alpine
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+  before_script:
+    - npm ci
+
+# Stage: Test
+test:unit:
+  <<: *node_template
+  stage: test
+  script:
+    - npm run test:headless
+  coverage: '/Lines\s*:\s*(\d+\.\d+)%/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    paths:
+      - coverage/
+    expire_in: 1 week
+
+test:e2e:
+  <<: *node_template
+  stage: test
+  script:
+    - npm run e2e
+  artifacts:
+    when: on_failure
+    paths:
+      - cypress/screenshots/
+      - cypress/videos/
+    expire_in: 1 week
+
+# Stage: Build
+build:docker:
+  stage: build
+  image: docker:24-dind
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - |
+      # Tags pour l'image
+      if [ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]; then
+        TAG="latest"
+      else
+        TAG="$CI_COMMIT_REF_SLUG"
+      fi
+    - docker build -t $CI_REGISTRY_IMAGE/$IMAGE_NAME:$TAG .
+    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:$TAG
+    - |
+      # Tag additionnel avec le SHA du commit
+      docker tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:$TAG $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+      docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+  only:
+    - main
+    - develop
+    - tags
+
+# Stage: Deploy
+deploy:staging:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $STAGING_SERVER >> ~/.ssh/known_hosts
+  script:
+    - |
+      ssh $STAGING_USER@$STAGING_SERVER << 'EOF'
+        cd /opt/smartlogi-frontend
+        docker-compose pull
+        docker-compose up -d
+        docker system prune -f
+      EOF
+  environment:
+    name: staging
+    url: https://staging.smartlogi.example.com
+  only:
+    - develop
+
+deploy:production:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $PRODUCTION_SERVER >> ~/.ssh/known_hosts
+  script:
+    - |
+      ssh $PRODUCTION_USER@$PRODUCTION_SERVER << 'EOF'
+        cd /opt/smartlogi-frontend
+        docker-compose pull
+        docker-compose up -d
+        docker system prune -f
+      EOF
+  environment:
+    name: production
+    url: https://smartlogi.example.com
+  when: manual
+  only:
+    - main
+    - tags

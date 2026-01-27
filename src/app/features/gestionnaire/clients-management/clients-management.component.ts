@@ -4,7 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { ClientService } from '../../../core/services/client.service';
 import type { ClientExpediteur } from '../../../core/models/client.model';
-import { debounceTime, Subject } from 'rxjs';
+import { UserService, type User } from '../../../core/services/user.service';
+import { GestionnaireColisService } from '../../../core/services/gestionnaire-colis.service';
+import { debounceTime, Subject, forkJoin } from 'rxjs';
 
 /**
  * Composant pour gérer les clients (Gestionnaire)
@@ -18,9 +20,12 @@ import { debounceTime, Subject } from 'rxjs';
 })
 export class ClientsManagementComponent implements OnInit {
   private readonly clientService = inject(ClientService);
+  private readonly userService = inject(UserService);
+  private readonly colisService = inject(GestionnaireColisService);
 
   // Données
   clients = signal<ClientExpediteur[]>([]);
+  users = signal<User[]>([]);
 
   // Pagination
   currentPage = signal(0);
@@ -48,12 +53,28 @@ export class ClientsManagementComponent implements OnInit {
     prenom: '',
     email: '',
     telephone: '',
-    adresse: ''
+    adresse: '',
+    userId: ''
   });
 
   ngOnInit(): void {
     this.chargerClients();
+    this.chargerUtilisateurs();
     this.setupSearch();
+  }
+
+  /**
+   * Charge tous les utilisateurs
+   */
+  private chargerUtilisateurs(): void {
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.users.set(users);
+      },
+      error: (error: any) => {
+        console.error('Erreur chargement utilisateurs:', error);
+      }
+    });
   }
 
   /**
@@ -78,10 +99,27 @@ export class ClientsManagementComponent implements OnInit {
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    this.clientService.getAllClients().subscribe({
-      next: (clients) => {
-        this.clients.set(clients);
-        this.totalElements.set(clients.length);
+    forkJoin({
+      clients: this.clientService.getAllClients(),
+      colis: this.colisService.getAllColis({ size: 10000 }) // Get all colis
+    }).subscribe({
+      next: ({ clients, colis }) => {
+        // Count colis per client
+        const colisCountMap = new Map<string, number>();
+        colis.content.forEach((c: any) => {
+          if (c.clientExpediteurId) {
+            colisCountMap.set(c.clientExpediteurId, (colisCountMap.get(c.clientExpediteurId) || 0) + 1);
+          }
+        });
+
+        // Enrich clients with colis count
+        const enrichedClients = clients.map(client => ({
+          ...client,
+          nombreColis: colisCountMap.get(client.id) || 0
+        }));
+
+        this.clients.set(enrichedClients);
+        this.totalElements.set(enrichedClients.length);
         this.loading.set(false);
       },
       error: (error: any) => {
@@ -141,7 +179,8 @@ export class ClientsManagementComponent implements OnInit {
       prenom: client.prenom,
       email: client.email,
       telephone: client.telephone || '',
-      adresse: client.adresse || ''
+      adresse: client.adresse || '',
+      userId: client.userId || ''
     });
     this.showModal.set(true);
   }
@@ -215,7 +254,8 @@ export class ClientsManagementComponent implements OnInit {
       prenom: '',
       email: '',
       telephone: '',
-      adresse: ''
+      adresse: '',
+      userId: ''
     });
   }
 }
